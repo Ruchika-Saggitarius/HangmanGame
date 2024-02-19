@@ -1,0 +1,462 @@
+openapi: '3.1.0'
+
+info:
+  title: 'Hangman Game API'
+  version: '1.0.0'
+  description: 'An API for Hangman Game that allows admin to do Words Management, see game statistics and allows users to resgister, login, play hangman game, and see leaderboard.'
+  termsOfService: 'https://hangman.com/terms-of-use'
+  contact:
+    name: 'Ruchika'
+    url: 'hangman.com'
+    email: 'ruchika@hangman.com'
+  license:
+    name: Hangman 1.0
+    url: 'http://www.hangman.org/licenses/LICENSE-2.0.html'
+
+servers:
+  - url: 'https://hangman.com'
+    description: 'Hangman Game URL'
+
+tags: 
+  - name: 'user'
+    description: 'All endpoint related to user info, from sign up to profile management'
+  - name: 'word'
+    description: 'All endpoints related to word management, adding and deleting word to list words'
+  - name: 'game'
+    description: 'All endpoints related to game, from getting game for user to playing game'
+  - name: 'statistics'
+    description: 'All endpoints related to game statistics'
+
+paths:
+
+  /register:
+    post:
+      tags: [user]
+      description: Register new user to Hangman Game
+      summary: Register new user to Hangman Game
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        201:
+          description: Sucessfully registered new user !!
+        400:
+          description: Bad Request - Invalid Input
+        500:
+          description: Internal Server Error
+  
+  /login:
+    post:
+      tags: [user]
+      description: Login user into Hangman Game
+      summary: Login user into Hangman Game
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        200:
+          description: Successfully Login !!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Login'
+        400:
+          description: Bad Request - Invalid Input
+        500:
+          description: Internal Server Error
+          
+  /logout:
+    post:
+      tags: [user]
+      description: Logout user from Hangman Game
+      summary: Logout user from Hangman Game
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                userId:
+                  type: string
+      responses:
+        200:
+          description: Successfully Logout !!
+        400:
+          description: Bad Request - Invalid Input
+        500:
+          description: Internal Server Error
+  
+  /user/{userId}:
+    get:
+      tags: [user]
+      summary: 'Get profile of user'
+      description: 'Get profile of user'
+      parameters: 
+        - name: userId
+          description: 'User ID'
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success !!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+        500:
+          description: Internal Server Error
+  
+  /user/{userId}/email:
+    post:
+      tags: [user]
+      summary: 'Update email of user'
+      description: 'Update email of user'
+      parameters: 
+        - name: userId
+          description: 'User ID'
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                  example: ruchika@gmail.com
+      responses:
+        200:
+          description: 'Email updated successfully'
+        400:
+          description: Bad Request - Invalid Input
+        500:
+          description: Internal Server Error
+          
+  /user/{userId}/password:
+    post:
+      tags: [user]
+      summary: 'Update password of user'
+      description: 'Update password of user'
+      parameters: 
+        - name: userId
+          description: 'User ID'
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                password:
+                  type: string
+                  example: admin
+      responses:
+        200:
+          description: 'Password updated successfully'
+        400:
+          description: Bad Request - Invalid Input
+        500:
+          description: Internal Server Error
+          
+  /user/forgot-password:
+    post:
+      tags: [user]
+      summary: 'Update password of user by sending it mail with reset link'
+      description: 'Update password of user by sending it mail with reset link'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                  example: ruchika@gmail.com
+      responses:
+        200:
+          description: 'Password reset mail sent successfully'
+        400:
+          description: 'Bad Request - Invalid Input'
+        500:
+          description: 'Internal Server Error'
+          
+  /word:
+    post:
+      tags: [word]
+      summary: 'Adding a new word alongwith its hint for game'
+      description: 'Adding a new word alongwith its hint for game'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Word'
+      responses:
+        201:
+          description: 'Word added successfully'
+        400:
+          description: 'Bad Request - Invalid Input'
+        500:
+          description: 'Internal Server Error'
+        
+  /word/{word}:
+    post:
+      tags: [word]
+      summary: 'Remove word alongwith its from game'
+      description: 'Remove word alongwith its from game'
+      parameters: 
+        - name: word
+          description: 'Word to remove'
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Word Removed successfully'
+        400:
+          description: 'Bad Request - Invalid Input'
+        500:
+          description: 'Internal Server Error'
+          
+  /words:
+    get:
+      tags: [word]
+      summary: 'List all words'
+      description: 'List all words'
+      responses:
+        200:
+          description: 'Retrieved all words alongwith their hints'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WordDetails'
+        500:
+          description: 'Internal Server Error'
+  
+  /game-statistics:
+    get:
+      tags: [statistics]
+      summary: 'Get all users of game with their total score'
+      description: 'Get all users of game with their total score'
+      responses:
+        200:
+          description: 'Retrieved all users of game with their total score'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameStatistics'
+                
+  /game:
+    get:
+      tags: [game]
+      summary: 'Get new game for logged-in user'
+      description: 'Get new game for logged-in user'
+      responses:
+        200:
+          description: 'Returned game successfully'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        500:
+          description: 'Internal Server Error'
+  
+  /games/{userId}:
+    get:
+      tags: [game]
+      summary: 'get all games of logged-in user'
+      description: 'get all games of logged-in user'
+      parameters: 
+        - name: userId
+          required: true
+          in: path
+          description: "UserId of logged-in user"
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Successfully pulled all games for the logged-in user'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    gameId:
+                      type: string
+                    remaingLives:
+                      type: integer
+        500:
+          description: 'Internal Server Error'
+  
+  /game/{gameId}:
+    get:
+      tags: [game]
+      summary: 'get a particular game for user'
+      description: 'get a particular game for user'
+      parameters: 
+        - name: gameId
+          description: 'Game ID'
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Successfully retrieved the game'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+        500:
+          description: 'Internal Server Error'
+                
+  /game/{gameId}/guess:
+    post:
+      tags: [game]
+      summary: 'posting guess of user'
+      description: 'posting guess of user'
+      parameters: 
+        - name: gameId
+          description: 'Game ID'
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                guess:
+                  type: string
+                  example: 'a'
+      responses:
+        200:
+          description: 'Successfully posted guess'
+          content:
+            application/json:
+              schema:
+                properties:
+                  remainingLives:
+                    type: integer
+                    example: '5'
+        401:
+          description: 'Bad Input'
+          content:
+            application/json:
+              schema:
+                properties:
+                  remainingLives:
+                    type: integer
+                    example: '5'
+        500:
+          description: 'Internal Server Error'
+          
+  /game/{gameId}/quit:
+    post:
+      tags: [game]
+      summary: 'quitting game'
+      description: 'quitting game'
+      parameters: 
+        - name: gameId
+          description: 'Game ID'
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Game quit successfully'
+        500:
+          description: 'Internal Server Error'
+              
+components:
+  schemas:
+    User:
+      properties:
+        username:
+          type: string
+          example: ruchika
+        email:
+          type: string
+          pattern: .+@.+\..+
+          example: ruchika@gmail.com
+        password:
+          type: string
+          example: ruchika1992
+    Login:
+      properties:
+        email:
+          type: string
+          example: ruchika@gmail.com
+        password:
+          type: string
+          example: admin
+          
+    UserDetails:
+      properties:
+        userId:
+          type: string
+          example: abc123
+        username:
+          type: string
+          example: ruchika
+        email:
+          type: string
+          example: ruchika@gmail.com
+          
+    WordDetails:
+      properties:
+        wordId:
+          type: string
+          example: abc123
+        word:
+          type: string
+          example: apple
+        hint:
+          type: string
+          example: a fruit
+          
+    Word:
+      properties:
+        word:
+          type: string
+          example: apple
+        hint:
+          type: string
+          example: a fruit
+    Game:
+      properties:
+        gameId:
+          type: string
+          example: g1234
+        wordId:
+          type: string
+          example: w123
+        remainingLife:
+          type: integer
+          example: 5
+    
+    GameStatistics:
+      properties:
+        username:
+          type: string
+        totalScore:
+          type: integer
+              
+  

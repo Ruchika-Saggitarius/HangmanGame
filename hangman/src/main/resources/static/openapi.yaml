@@ -1,5 +1,4 @@
-openapi: '3.1.0'
-
+openapi: 3.1.0
 info:
   title: 'Hangman Game API'
   version: '1.0.0'
@@ -14,8 +13,8 @@ info:
     url: 'http://www.hangman.org/licenses/LICENSE-2.0.html'
 
 servers:
-  - url: 'https://hangman.com'
-    description: 'Hangman Game URL'
+  - url: 'http://localhost:8080'
+    description: 'Local server for development purpose only'
 
 tags: 
   - name: 'user'
@@ -272,36 +271,55 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Game'
+        401:
+          description: 'Unauthorized access'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        403:
+          description: 'Request Forbidden'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'       
         500:
           description: 'Internal Server Error'
-  
-  /games/{userId}:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+                
+  /games:
     get:
       tags: [game]
       summary: 'get all games of logged-in user'
       description: 'get all games of logged-in user'
-      parameters: 
-        - name: userId
-          required: true
-          in: path
-          description: "UserId of logged-in user"
-          schema:
-            type: string
       responses:
         200:
           description: 'Successfully pulled all games for the logged-in user'
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  properties:
-                    gameId:
-                      type: string
-                    remaingLives:
-                      type: integer
+                $ref: '#/components/schemas/GamesForParticularUser'
+        401:
+          description: 'Unauthorized access'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        403:
+          description: 'Request Forbidden'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'       
         500:
           description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
   
   /game/{gameId}:
     get:
@@ -317,13 +335,35 @@ paths:
             type: string
       responses:
         200:
-          description: 'Successfully retrieved the game'
+          description: 'Successfully retrieved the game with details like word state, remaining lives and attempted characters'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Game"
+                $ref: "#/components/schemas/GameDetails"
+        401:
+          description: 'Unauthorized access'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        403:
+          description: 'Request Forbidden'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails' 
+        404:
+          description: 'Invalid Game ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'         
         500:
           description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
                 
   /game/{gameId}/guess:
     post:
@@ -344,6 +384,7 @@ paths:
               properties:
                 guess:
                   type: string
+                  pattern: ^[a-z]$
                   example: 'a'
       responses:
         200:
@@ -351,21 +392,37 @@ paths:
           content:
             application/json:
               schema:
-                properties:
-                  remainingLives:
-                    type: integer
-                    example: '5'
-        401:
-          description: 'Bad Input'
+                $ref: '#/components/schemas/GameDetails'
+        400:
+          description: 'Bad Request - If input is not single alphabet character or trying to guess for game which is already over'
           content:
             application/json:
               schema:
-                properties:
-                  remainingLives:
-                    type: integer
-                    example: '5'
+                $ref: '#/components/schemas/ErrorDetails'
+        401:
+          description: 'Unauthorized access'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        403:
+          description: 'Request Forbidden'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'   
+        404:
+          description: 'Invalid Game ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'      
         500:
           description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
           
   /game/{gameId}/quit:
     post:
@@ -382,8 +439,30 @@ paths:
       responses:
         200:
           description: 'Game quit successfully'
+        401:
+          description: 'Unauthorized access'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        403:
+          description: 'Request Forbidden'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'  
+        404:
+          description: 'Invalid Game ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'       
         500:
           description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
               
 components:
   schemas:
@@ -407,7 +486,6 @@ components:
         password:
           type: string
           example: admin
-          
     UserDetails:
       properties:
         userId:
@@ -419,7 +497,6 @@ components:
         email:
           type: string
           example: ruchika@gmail.com
-          
     WordDetails:
       properties:
         wordId:
@@ -431,7 +508,6 @@ components:
         hint:
           type: string
           example: a fruit
-          
     Word:
       properties:
         word:
@@ -444,19 +520,37 @@ components:
       properties:
         gameId:
           type: string
-          example: g1234
-        wordId:
+    GamesForParticularUser:
+      properties:
+        games:
+          type: array
+          items:
+            type: object
+            properties:
+              gameId:
+                type: string
+              remainingLives:
+                  type: integer
+    GameDetails:
+      properties:
+        wordState:
           type: string
-          example: w123
-        remainingLife:
+        remainingLives:
           type: integer
-          example: 5
-    
+        attemptedCharacters:
+          type: array
+          items:
+            type: string
+            pattern: ^[a-z]$
     GameStatistics:
       properties:
         username:
           type: string
         totalScore:
           type: integer
-              
-  
+    ErrorDetails:
+      properties:
+        title:
+          type: string
+        message:
+          type: string

@@ -27,6 +27,7 @@ public class Word {
     public void setHint(String hint) {
         this.hint = hint;
     }
+    
 
     public String getObscuredWord(List<String> guessedAlphabets) {
 

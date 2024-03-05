@@ -32,15 +32,18 @@ public class MockGameRepository implements IGameRepository {
     }
 
     @Override
-    public List<Game> getAllGamesOfUser(String userId) {
-
+    public List<Game> getAllGamesOfUser() {
         return games;
-        
     }
 
     @Override
     public Game saveGuessByUser(String guess, String gameId) {
-        // TODO Auto-generated method stub
+        for (Game game : games) {
+            if(game.getGameId().equals(gameId)){
+                game.addGuess(guess);
+                return game;
+            }
+        }
         return null;
     }
 

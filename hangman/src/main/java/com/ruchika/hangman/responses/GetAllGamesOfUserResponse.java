@@ -1,18 +1,28 @@
 package com.ruchika.hangman.responses;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ruchika.hangman.model.Game;
 
 public class GetAllGamesOfUserResponse {
     
-    private List<Game> games;
+    private List<Game> gamesWithoutWord;
 
-    public List<Game> getGames() {
-        return games;
+    public List<Game> getGamesWithoutWord() {
+        return gamesWithoutWord;
     }
 
-    public void setGames(List<Game> games) {
-        this.games = games;
+    public void setGamesWithoutWord(List<Game> gamesWithoutWord) {
+        this.gamesWithoutWord = gamesWithoutWord;
     }
+
+    public GetAllGamesOfUserResponse(List<Game> games) {
+        this.gamesWithoutWord = new ArrayList<Game>();
+        for(Game game: games) {
+            game.setWord(null);
+            this.gamesWithoutWord.add(game);        
+        }
+    }
+
 }

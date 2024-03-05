@@ -13,7 +13,7 @@ public interface IGameRepository {
     
     Game getGameByGameId(String gameId);
 
-    List<Game> getAllGamesOfUser(String userId);
+    List<Game> getAllGamesOfUser();
 
     Game saveGuessByUser(String guess, String gameId);
 

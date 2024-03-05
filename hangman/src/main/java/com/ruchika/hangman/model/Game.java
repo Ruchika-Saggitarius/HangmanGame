@@ -42,4 +42,8 @@ public class Game {
     public void setGuessedAlphabets(List<String> guessedAlphabets) {
         this.guessedAlphabets = guessedAlphabets;
     }
+
+    public void addGuess(String guess) {
+        guessedAlphabets.add(guess);
+    }
 }

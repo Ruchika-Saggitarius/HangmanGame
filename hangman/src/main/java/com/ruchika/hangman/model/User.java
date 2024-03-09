@@ -1,25 +1,34 @@
 package com.ruchika.hangman.model;
 
-public class User {
+import java.util.Collection;
+import java.util.List;
 
-    private String userName;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+public class User implements UserDetails {
+
+    private String displayName;
     private String email;
     private String password;
-    private String role;
+    private Role role;
     
-    public User(String userName, String email, String password, String role) {
-        this.userName = userName;
+    public User(String displayName, String email, String password, Role role) {
+        this.displayName = displayName;
         this.email = email;
         this.password = password;
         this.role = role;
     }
 
-    public String getUserName() {
-        return userName;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
-    public void setUserName(String userName) {
-        this.userName = userName;
+
+    public String getDisplayName() {
+        return displayName;
     }
+
     public String getEmail() {
         return email;
     }
@@ -32,12 +41,47 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-    public String getRole() {
+
+    public Role getRole() {
         return role;
     }
-    public void setRole(String role) {
+
+    public void setRole(Role role) {
         this.role = role;
     }
+    
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+
     
     
 }

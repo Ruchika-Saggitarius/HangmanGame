@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import com.ruchika.hangman.config.JwtService;
 import com.ruchika.hangman.model.User;
+import com.ruchika.hangman.responses.LoginResponse;
 
 @Service
 public class MockUserRepository implements IUserRepository{
@@ -22,11 +24,14 @@ public class MockUserRepository implements IUserRepository{
     }
 
     @Override
-    public void loginUser(String email, String password) {
+    public String loginUser(String email, String password) {
         for(User user: users) {
             if(user.getEmail().equals(email)) {
                 if(BCrypt.checkpw(password, user.getPassword())) {
                     System.out.println("******User logged in*******");
+                    JwtService jwtService = new JwtService();
+                    String token = jwtService.generateToken(user);
+                    return token;
                 }
                 else{
                     System.out.println("******Invalid password*********");
@@ -38,8 +43,7 @@ public class MockUserRepository implements IUserRepository{
             }
             
         }
-        
-        
+        return null;
     }
 
     @Override
@@ -48,7 +52,7 @@ public class MockUserRepository implements IUserRepository{
     }
 
     @Override
-    public User getUserByUserId(String userId) {
+    public User getUserByEmail(String email) {
         return null;
     }
 

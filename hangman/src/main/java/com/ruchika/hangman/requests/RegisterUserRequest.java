@@ -1,28 +1,30 @@
 package com.ruchika.hangman.requests;
 
+import com.ruchika.hangman.model.Role;
+
 public class RegisterUserRequest {
 
-    private String userName;
+    private String displayName;
     private String email;
     private String password;
-    private String role;
+    private Role role;
 
     public RegisterUserRequest() {
     }
 
-    public RegisterUserRequest(String userName, String email, String password, String role) {
-        this.userName = userName;
+    public RegisterUserRequest(String displayName, String email, String password, Role role) {
+        this.displayName = displayName;
         this.email = email;
         this.password = password;
         this.role = role;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getEmail() {
@@ -41,12 +43,13 @@ public class RegisterUserRequest {
         this.password = password;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
+
     
 }

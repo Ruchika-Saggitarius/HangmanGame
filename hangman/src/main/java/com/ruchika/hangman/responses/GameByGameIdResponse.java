@@ -2,8 +2,6 @@ package com.ruchika.hangman.responses;
 
 import java.util.List;
 
-import com.ruchika.hangman.model.Game;
-import com.ruchika.hangman.model.Word;
 
 public class GameByGameIdResponse {
 
@@ -12,21 +10,12 @@ public class GameByGameIdResponse {
     private int remainingLives;
     private List<String> guessedAlphabets;
 
-    public GameByGameIdResponse(String wordToGuess, String hint, int remainingLives,
+    public GameByGameIdResponse(String wordToDisplay, String hint, int remainingLives,
             List<String> guessedAlphabets) {
+        this.wordToDisplay = wordToDisplay;
         this.hint = hint;
         this.remainingLives = remainingLives;
         this.guessedAlphabets = guessedAlphabets;
-    }
-
-    public GameByGameIdResponse(Game game) {
-        List<String> guessedAlphabets = game.getGuessedAlphabets();
-        Word word = game.getWord();
-
-        this.guessedAlphabets = game.getGuessedAlphabets();
-        this.remainingLives = game.getRemainingLives();
-        this.hint = word.getHint();
-        this.wordToDisplay = word.getObscuredWord(guessedAlphabets);
     }
 
     public String getHint() {

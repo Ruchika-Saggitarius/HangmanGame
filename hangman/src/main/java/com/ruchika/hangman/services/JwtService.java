@@ -1,4 +1,4 @@
-package com.ruchika.hangman.authentication;
+package com.ruchika.hangman.services;
 
 import java.security.Key;
 import java.util.Date;

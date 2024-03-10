@@ -4,23 +4,16 @@ import com.ruchika.hangman.model.Role;
 
 public class GetUserProfileResponse {
 
-    private String userId;
-
     private String email;
 
     private String displayName;
 
     private Role role;
 
-    public GetUserProfileResponse(String userId, String email, String displayName, Role role) {
-        this.userId = userId;
+    public GetUserProfileResponse(String email, String displayName, Role role) {
         this.email = email;
         this.displayName = displayName;
         this.role = role;
-    }
-
-    public String getUserId() {
-        return userId;
     }
 
     public String getEmail() {
@@ -34,11 +27,7 @@ public class GetUserProfileResponse {
     public Role getRole() {
         return role;
     }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
+    
     public void setEmail(String email) {
         this.email = email;
     }

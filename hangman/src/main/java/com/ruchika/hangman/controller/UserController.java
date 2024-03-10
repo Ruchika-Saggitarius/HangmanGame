@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ruchika.hangman.authentication.JwtService;
 import com.ruchika.hangman.exceptions.BadRequestException;
 import com.ruchika.hangman.model.User;
 import com.ruchika.hangman.repositories.IUserRepository;
@@ -23,6 +22,7 @@ import com.ruchika.hangman.requests.ResetPasswordRequest;
 import com.ruchika.hangman.requests.UpdateEmailRequest;
 import com.ruchika.hangman.responses.GetUserProfileResponse;
 import com.ruchika.hangman.responses.LoginResponse;
+import com.ruchika.hangman.services.JwtService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -88,7 +88,7 @@ public class UserController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userId = ((User) auth.getPrincipal()).getUserId();
         User user = userRepository.getUserProfile(userId);
-        return ResponseEntity.ok(new GetUserProfileResponse(user.getUserId(), user.getEmail(),user.getDisplayName(), user.getRole()));        
+        return ResponseEntity.ok(new GetUserProfileResponse(user.getEmail(),user.getDisplayName(), user.getRole()));        
     }
 
     @PostMapping("/user/email")

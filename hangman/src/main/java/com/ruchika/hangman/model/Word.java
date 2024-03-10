@@ -4,12 +4,22 @@ import java.util.List;
 
 public class Word {
 
+    private String wordId;
     private String word;
     private String hint;
 
-    public Word(String word, String hint) {
+    public Word(String wordId, String word, String hint) {
+        this.wordId = wordId;
         this.word = word;
         this.hint = hint;
+    }
+
+    public String getWordId() {
+        return wordId;
+    }
+
+    public void setWordId(String wordId) {
+        this.wordId = wordId;
     }
 
     public String getWord() {

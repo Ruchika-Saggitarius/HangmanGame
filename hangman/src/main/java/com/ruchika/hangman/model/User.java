@@ -9,16 +9,26 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class User implements UserDetails {
 
+    private String userId;
     private String displayName;
     private String email;
     private String password;
     private Role role;
     
-    public User(String displayName, String email, String password, Role role) {
+    public User(String userId, String displayName, String email, String password, Role role) {
+        this.userId = userId;
         this.displayName = displayName;
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public void setDisplayName(String displayName) {
@@ -58,7 +68,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return userId;
     }
 
     @Override

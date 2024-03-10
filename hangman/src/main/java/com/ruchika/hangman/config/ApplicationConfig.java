@@ -21,7 +21,7 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> mockUserRepository.getUserByEmail(username);
+        return userId -> mockUserRepository.getUserByUserId(userId);
         }
 
     @Bean

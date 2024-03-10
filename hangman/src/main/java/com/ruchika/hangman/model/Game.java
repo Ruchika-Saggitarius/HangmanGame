@@ -8,12 +8,23 @@ public class Game {
     private Word word;
     private int remainingLives;
     private List<String> guessedAlphabets;
+    private String userId;
+    
 
-    public Game(String gameId, Word word, int remainingLives, List<String> guessedAlphabets) {
+    public Game(String gameId, Word word, int remainingLives, List<String> guessedAlphabets, String userId) {
         this.gameId = gameId;
         this.word = word;
         this.remainingLives = remainingLives;
         this.guessedAlphabets = guessedAlphabets;
+        this.userId = userId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public Word getWord() {

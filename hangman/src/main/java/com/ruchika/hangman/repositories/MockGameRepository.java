@@ -32,8 +32,14 @@ public class MockGameRepository implements IGameRepository {
     }
 
     @Override
-    public List<Game> getAllGamesOfUser() {
-        return games;
+    public List<Game> getAllGamesOfUser(String userId) {
+        List<Game> userGames = new ArrayList<>();
+        for (Game game : games) {
+            if(game.getUserId().equals(userId)){
+                userGames.add(game);
+            }
+        }
+        return userGames;
     }
 
     @Override
@@ -51,6 +57,18 @@ public class MockGameRepository implements IGameRepository {
     public Game quitGame(String gameId) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public boolean checkIfGuessAlreadyMade(String gameId, String lowerCase) {
+        for (Game game : games) {
+            if(game.getGameId().equals(gameId)){
+                if(game.getGuessedAlphabets().contains(lowerCase)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
 }

@@ -3,24 +3,29 @@ package com.ruchika.hangman.repositories;
 import org.springframework.stereotype.Service;
 
 import com.ruchika.hangman.model.User;
-import com.ruchika.hangman.responses.LoginResponse;
 
 @Service
 public interface IUserRepository {
 
     void saveUser(User newUser);
 
-    String loginUser(String email, String password);
-
-    User logoutUser(String email);
+    User loginUser(String email, String password);
 
     User getUserByEmail(String email);
 
-    User updateEmailOfUser(String userId, String email);
+    User getUserByUserId(String userId);
 
-    User updatePasswordOfUser(String userId, String password);
+    User getUserProfile(String userId);
 
-    User sendPasswordUpdateLink(String email);
+    void updateEmailOfUser(String userId, String newEmail);
+
+    void ResetPasswordOfUser(String userId, String oldPassword, String newPassword);
+
+    void ForgotPasswordSendLinkViaEmail(String email);
+
+    boolean checkIfEmailExists(String email);
+
+    boolean checkIfDisplayNameExists(String displayName);
 
     
 }

@@ -13,10 +13,12 @@ public interface IGameRepository {
     
     Game getGameByGameId(String gameId);
 
-    List<Game> getAllGamesOfUser();
+    List<Game> getAllGamesOfUser(String userId);
 
     Game saveGuessByUser(String guess, String gameId);
 
     Game quitGame(String gameId);
+
+    boolean checkIfGuessAlreadyMade(String gameId, String lowerCase);
 
 }

@@ -9,7 +9,9 @@ import com.ruchika.hangman.model.Game;
 @Service
 public interface IGameRepository {
     
-    Game saveGame(Game newGame);
+    Game createGame(Game newGame);
+
+    void saveGame(String gameId, Game game);
     
     Game getGameByGameId(String gameId);
 
@@ -17,7 +19,7 @@ public interface IGameRepository {
 
     Game saveGuessByUser(String guess, String gameId);
 
-    Game quitGame(String gameId);
+    void quitGame(String gameId);
 
     boolean checkIfGuessAlreadyMade(String gameId, String lowerCase);
 

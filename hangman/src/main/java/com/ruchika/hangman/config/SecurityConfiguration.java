@@ -58,6 +58,10 @@ public class SecurityConfiguration {
                         .hasAuthority("USER"));
 
         http.authorizeHttpRequests(
+                (httpRequests) -> httpRequests.requestMatchers(HttpMethod.POST, "/game/{gameId}/quit")
+                        .hasAuthority("USER"));
+
+        http.authorizeHttpRequests(
                 (httpRequests) -> httpRequests.requestMatchers(HttpMethod.GET, "/words")
                         .hasAuthority("ADMIN"));
 

@@ -6,25 +6,39 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ruchika.hangman.model.Game;
+import com.ruchika.hangman.model.GameStatus;
 
 @Service
 public class MockGameRepository implements IGameRepository {
 
     List<Game> games;
+
     public MockGameRepository() {
         games = new ArrayList<>();
     }
 
     @Override
-    public Game saveGame(Game newGame) {
+    public Game createGame(Game newGame) {
         games.add(newGame);
         return newGame;
     }
 
     @Override
+    public void saveGame(String gameId, Game updatedGame) {
+        // int index = games.indexOf(updatedGame);
+        // games.set(index, updatedGame);
+
+        for (int i=0; i<games.size();i++) {
+            if (games.get(i).getGameId().equals(gameId)) {
+                games.set(i, updatedGame);
+            }
+        }
+    }
+
+    @Override
     public Game getGameByGameId(String gameId) {
         for (Game game : games) {
-            if(game.getGameId().equals(gameId)){
+            if (game.getGameId().equals(gameId)) {
                 return game;
             }
         }
@@ -35,7 +49,7 @@ public class MockGameRepository implements IGameRepository {
     public List<Game> getAllGamesOfUser(String userId) {
         List<Game> userGames = new ArrayList<>();
         for (Game game : games) {
-            if(game.getUserId().equals(userId)){
+            if (game.getUserId().equals(userId)) {
                 userGames.add(game);
             }
         }
@@ -45,7 +59,7 @@ public class MockGameRepository implements IGameRepository {
     @Override
     public Game saveGuessByUser(String guess, String gameId) {
         for (Game game : games) {
-            if(game.getGameId().equals(gameId)){
+            if (game.getGameId().equals(gameId)) {
                 game.addGuess(guess);
                 return game;
             }
@@ -54,21 +68,24 @@ public class MockGameRepository implements IGameRepository {
     }
 
     @Override
-    public Game quitGame(String gameId) {
-        // TODO Auto-generated method stub
-        return null;
+    public void quitGame(String gameId) {
+        for (Game game : games) {
+            if (game.getGameId().equals(gameId)) {
+                game.setGameStatus(GameStatus.QUIT);
+            }
+        }
     }
 
     @Override
     public boolean checkIfGuessAlreadyMade(String gameId, String lowerCase) {
         for (Game game : games) {
-            if(game.getGameId().equals(gameId)){
-                if(game.getGuessedAlphabets().contains(lowerCase)){
+            if (game.getGameId().equals(gameId)) {
+                if (game.getGuessedAlphabets().contains(lowerCase)) {
                     return true;
                 }
             }
         }
         return false;
     }
-    
+
 }

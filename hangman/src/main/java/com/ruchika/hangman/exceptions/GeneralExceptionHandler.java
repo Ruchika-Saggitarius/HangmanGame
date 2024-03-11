@@ -15,5 +15,10 @@ public class GeneralExceptionHandler  extends ResponseEntityExceptionHandler  {
     public ResponseEntity<ApiError> badRequestExceptionHandler(BadRequestException exception) {
         return new ResponseEntity<ApiError>(new ApiError("Bad request", exception.getMessage()), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiError> unauthorizedExceptionHandler(UnauthorizedException exception) {
+        return new ResponseEntity<ApiError>(new ApiError("Unauthorized", exception.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
     
 }

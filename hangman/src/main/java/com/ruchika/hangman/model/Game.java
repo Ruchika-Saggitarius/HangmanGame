@@ -9,14 +9,16 @@ public class Game {
     private int remainingLives;
     private List<String> guessedAlphabets;
     private String userId;
+    private GameStatus gameStatus;
     
 
-    public Game(String gameId, Word word, int remainingLives, List<String> guessedAlphabets, String userId) {
+    public Game(String gameId, Word word, int remainingLives, List<String> guessedAlphabets, String userId, GameStatus gameStatus) {
         this.gameId = gameId;
         this.word = word;
         this.remainingLives = remainingLives;
         this.guessedAlphabets = guessedAlphabets;
         this.userId = userId;
+        this.gameStatus = gameStatus;
     }
 
     public String getUserId() {
@@ -54,7 +56,35 @@ public class Game {
         this.guessedAlphabets = guessedAlphabets;
     }
 
+    public GameStatus getGameStatus() {
+        return gameStatus;
+    }
+
+    public void setGameStatus(GameStatus gameStatus) {
+        this.gameStatus = gameStatus;
+    }
+
     public void addGuess(String guess) {
         guessedAlphabets.add(guess);
     }
+
+
+    // @Override
+    // public boolean equals(Object obj) {
+    //     if (this == obj)
+    //         return true;
+    //     if (obj == null)
+    //         return false;
+    //     if (getClass() != obj.getClass())
+    //         return false;
+    //     Game other = (Game) obj;
+    //     if (gameId == null) {
+    //         if (other.gameId != null)
+    //             return false;
+    //     } else if (!gameId.equals(other.gameId))
+    //         return false;
+    //     return true;
+    // }
+
+    
 }

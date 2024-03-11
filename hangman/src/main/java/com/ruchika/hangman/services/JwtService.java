@@ -12,10 +12,14 @@ import org.springframework.stereotype.Service;
 import com.ruchika.hangman.model.User;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 
 @Service
 public class JwtService {
@@ -27,23 +31,21 @@ public class JwtService {
     }
 
     public String generateToken(User user) {
-        Map<String,Object> extraClaims = new HashMap<String,Object>();
+        Map<String, Object> extraClaims = new HashMap<String, Object>();
         extraClaims.put("role", user.getRole());
         extraClaims.put("displayName", user.getDisplayName());
         return generateToken(extraClaims, user);
     }
 
-    public boolean isTokenValid(String token, UserDetails user) {
-        final String userId = extractUserId(token);
-        return (userId.equals(user.getUsername()) && !isTokenExpired(token));
-    }
-
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    public boolean isTokenValid(String token) {
+        try{
+            extractAllClaims(token);
+            return true;
+        }
+        catch(ExpiredJwtException | MalformedJwtException | SignatureException | UnsupportedJwtException e) {
+            System.err.println(e);
+            return false;
+        }
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
@@ -60,7 +62,7 @@ public class JwtService {
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
-      }
+    }
 
     private Claims extractAllClaims(String token) {
         return Jwts

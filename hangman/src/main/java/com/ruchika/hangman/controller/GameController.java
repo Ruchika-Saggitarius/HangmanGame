@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ruchika.hangman.exceptions.BadRequestException;
 import com.ruchika.hangman.model.Game;
+import com.ruchika.hangman.model.GameStatus;
 import com.ruchika.hangman.model.Word;
 import com.ruchika.hangman.repositories.IGameRepository;
 import com.ruchika.hangman.repositories.IWordRepository;
@@ -43,29 +44,31 @@ public class GameController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userId = ((User) auth.getPrincipal()).getUserId();
         Word word;
-        try{
+        try {
             word = mockWordRepository.getRandomWord();
-        }catch(IndexOutOfBoundsException e)
-        {
+        } catch (IndexOutOfBoundsException e) {
             throw new BadRequestException("No words available. Admin needs to add words to play the game.");
         }
         String gameId = UUID.randomUUID().toString();
-        Game game = new Game(gameId, word, 6, new ArrayList<String>(), userId);
-        mockGameRepository.saveGame(game);
+        Game game = new Game(gameId, word, 6, new ArrayList<String>(), userId, GameStatus.IN_PROGRESS);
+        mockGameRepository.createGame(game);
         return new NewGameResponse(game);
     }
 
     @GetMapping("/game/{gameId}")
     public GameByGameIdResponse getGameByGameId(@PathVariable String gameId) {
-        if(gameId.isEmpty()){
+        if (gameId.isEmpty()) {
             throw new BadRequestException("Invalid input. Please provide a valid game id.");
         }
-        else if(mockGameRepository.getGameByGameId(gameId)==null){
-            throw new BadRequestException("Invalid game id. Please provide a valid game id.");
-        }
         else {
-        Game game = mockGameRepository.getGameByGameId(gameId);
-        return new GameByGameIdResponse(game);
+            Game game = mockGameRepository.getGameByGameId(gameId);
+            if (game == null) {
+                throw new BadRequestException("Invalid game id. Please provide a valid game id.");
+            }
+            Word word = game.getWord();
+            String wordToDisplay = word.getObscuredWord(game.getGuessedAlphabets());
+            return new GameByGameIdResponse(wordToDisplay, game.getWord().getHint(), game.getRemainingLives(),
+                    game.getGuessedAlphabets());
         }
     }
 
@@ -80,16 +83,47 @@ public class GameController {
     @PostMapping("/game/{gameId}/guess")
     public ResponseEntity<SaveGuessByUserResponse> saveGuessByUser(@PathVariable String gameId,
             @RequestBody GuessRequest guessRequest) {
-        if (guessRequest.getGuess().length() != 1 || !Character.isLetter(guessRequest.getGuess().charAt(0))) {
+        if (gameId.isEmpty() || guessRequest.getGuess().isEmpty()) {
+            throw new BadRequestException("Invalid input. Please provide a valid game id and guess.");
+        }
+        Game requestedGame = mockGameRepository.getGameByGameId(gameId);
+        if (requestedGame == null) {
+            throw new BadRequestException("Invalid game id. Please provide a valid game id.");
+        } else if (requestedGame.getGameStatus() != GameStatus.IN_PROGRESS){
+            throw new BadRequestException("Game already over. Please start a new game.");
+        } else if (guessRequest.getGuess().length() != 1 || !Character.isLetter(guessRequest.getGuess().charAt(0))) {
             throw new BadRequestException("Only single alphabet is allowed as guess");
-            
-        }
-        else if(mockGameRepository.checkIfGuessAlreadyMade(gameId, guessRequest.getGuess().toLowerCase())){
+
+        } else if (mockGameRepository.checkIfGuessAlreadyMade(gameId, guessRequest.getGuess().toLowerCase())) {
             throw new BadRequestException("Guess already made. Please provide a different guess.");
+        } else {
+            String guess = guessRequest.getGuess().toLowerCase();
+            Game game = mockGameRepository.saveGuessByUser(guess, gameId);
+            String wordState = game.getWord().getObscuredWord(game.getGuessedAlphabets());
+            List<String> guessedAlphabets = game.getGuessedAlphabets();
+            boolean isCorrectGuess = wordState.contains(guess);
+            int remainingLives = game.getRemainingLives();
+            GameStatus gameStatus;
+            if (!isCorrectGuess) {
+                remainingLives--;
+            }
+            if (wordState.equals(game.getWord().getWord())) {
+                gameStatus = GameStatus.WON;
+            } else if (remainingLives == 0) {
+                gameStatus = GameStatus.LOST;
+            } else {
+                gameStatus = GameStatus.IN_PROGRESS;
+            }
+            game.setRemainingLives(remainingLives);
+            game.setGameStatus(gameStatus);
+            mockGameRepository.saveGame(gameId, game);
+            return new ResponseEntity<SaveGuessByUserResponse>(new SaveGuessByUserResponse(wordState, remainingLives,
+                    guessedAlphabets, isCorrectGuess, gameStatus), HttpStatus.ACCEPTED);
         }
-        else {
-        Game game = mockGameRepository.saveGuessByUser(guessRequest.getGuess().toLowerCase(), gameId);
-        return new ResponseEntity<SaveGuessByUserResponse>(new SaveGuessByUserResponse(game),HttpStatus.ACCEPTED);
-        }
+    }
+
+    @PostMapping("/game/{gameId}/quit")
+    public void quitGame(@PathVariable String gameId) {
+        mockGameRepository.quitGame(gameId);
     }
 }

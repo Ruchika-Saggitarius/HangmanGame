@@ -2,7 +2,7 @@ package com.ruchika.hangman.responses;
 
 import java.util.List;
 
-import com.ruchika.hangman.model.Game;
+import com.ruchika.hangman.model.GameStatus;
 
 public class SaveGuessByUserResponse {
 
@@ -10,24 +10,15 @@ public class SaveGuessByUserResponse {
     private int remainingLives;
     private List<String> guessedAlphabets;
     private boolean isCorrectGuess;
+    private GameStatus gameStatus;
 
-    public SaveGuessByUserResponse(String wordState, int remainingLives, List<String> guessedAlphabets, boolean isCorrectGuess) {
+    public SaveGuessByUserResponse(String wordState, int remainingLives, List<String> guessedAlphabets,
+            boolean isCorrectGuess, GameStatus gameStatus) {
         this.wordState = wordState;
         this.remainingLives = remainingLives;
         this.guessedAlphabets = guessedAlphabets;
         this.isCorrectGuess = isCorrectGuess;
-    }
-
-    public SaveGuessByUserResponse(Game game) {
-        this.wordState = game.getWord().getObscuredWord(game.getGuessedAlphabets());
-        this.guessedAlphabets = game.getGuessedAlphabets();
-        this.isCorrectGuess = game.getWord().getObscuredWord(game.getGuessedAlphabets()).contains(game.getGuessedAlphabets().get(game.getGuessedAlphabets().size() - 1));
-        if(this.isCorrectGuess) {
-            this.remainingLives = game.getRemainingLives();
-        } else {
-            this.remainingLives = game.getRemainingLives() - 1;
-        }
-        game.setRemainingLives(this.remainingLives);
+        this.gameStatus = gameStatus;
     }
 
     public String getWordState() {
@@ -61,5 +52,13 @@ public class SaveGuessByUserResponse {
     public void setCorrectGuess(boolean isCorrectGuess) {
         this.isCorrectGuess = isCorrectGuess;
     }
-    
+
+    public GameStatus getGameStatus() {
+        return gameStatus;
+    }
+
+    public void setGameStatus(GameStatus gameStatus) {
+        this.gameStatus = gameStatus;
+    }
+
 }

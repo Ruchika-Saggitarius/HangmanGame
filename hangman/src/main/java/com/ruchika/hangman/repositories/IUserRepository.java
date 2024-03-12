@@ -1,5 +1,7 @@
 package com.ruchika.hangman.repositories;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.ruchika.hangman.model.User;
@@ -26,6 +28,8 @@ public interface IUserRepository {
     boolean checkIfEmailExists(String email);
 
     boolean checkIfDisplayNameExists(String displayName);
+
+    List<User> getAllUsers();
 
     
 }

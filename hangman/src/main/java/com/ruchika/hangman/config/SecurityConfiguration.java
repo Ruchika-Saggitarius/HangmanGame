@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.ruchika.hangman.filter.JwtAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 public class SecurityConfiguration {
 
     @Autowired
@@ -39,7 +39,7 @@ public class SecurityConfiguration {
 
         http.authorizeHttpRequests(
                 (httpRequests) -> httpRequests.requestMatchers(HttpMethod.POST, "/register")
-                        .permitAll());
+                        .permitAll());       
 
         http.authorizeHttpRequests(
                 (httpRequests) -> httpRequests.requestMatchers(HttpMethod.GET, "/game")

@@ -17,13 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ruchika.hangman.exceptions.BadRequestException;
 import com.ruchika.hangman.model.Game;
+import com.ruchika.hangman.model.GameStatistics;
 import com.ruchika.hangman.model.GameStatus;
 import com.ruchika.hangman.model.Word;
 import com.ruchika.hangman.repositories.IGameRepository;
+import com.ruchika.hangman.repositories.IUserRepository;
 import com.ruchika.hangman.repositories.IWordRepository;
 import com.ruchika.hangman.requests.GuessRequest;
 import com.ruchika.hangman.responses.GameByGameIdResponse;
 import com.ruchika.hangman.responses.GetAllGamesOfUserResponse;
+import com.ruchika.hangman.responses.GetGameStatisticsResponse;
 import com.ruchika.hangman.responses.NewGameResponse;
 import com.ruchika.hangman.responses.SaveGuessByUserResponse;
 import com.ruchika.hangman.model.User;
@@ -37,6 +40,8 @@ public class GameController {
     private IGameRepository mockGameRepository;
     @Autowired
     private IWordRepository mockWordRepository;
+    @Autowired
+    private IUserRepository mockUserRepository;
 
     @GetMapping("/game")
     public NewGameResponse getNewGame(HttpServletRequest request) {
@@ -64,6 +69,9 @@ public class GameController {
             Game game = mockGameRepository.getGameByGameId(gameId);
             if (game == null) {
                 throw new BadRequestException("Invalid game id. Please provide a valid game id.");
+            }
+            if (game.getGameStatus()!=GameStatus.IN_PROGRESS) {
+                throw new BadRequestException("Game already over. Please start a new game.");
             }
             Word word = game.getWord();
             String wordToDisplay = word.getObscuredWord(game.getGuessedAlphabets());
@@ -124,6 +132,42 @@ public class GameController {
 
     @PostMapping("/game/{gameId}/quit")
     public void quitGame(@PathVariable String gameId) {
+        if(gameId.isEmpty()) {
+            throw new BadRequestException("Invalid input. Please provide a valid game id and guess.");
+        }
+        Game game = mockGameRepository.getGameByGameId(gameId);
+        if(game == null) {
+            throw new BadRequestException("Invalid game id. Please provide a valid game id.");
+        }
+        if(game.getGameStatus() != GameStatus.IN_PROGRESS) {
+            throw new BadRequestException("Game is already over!!");
+        }
         mockGameRepository.quitGame(gameId);
+    }
+
+    @GetMapping("/game-statistics")
+    public ResponseEntity<GetGameStatisticsResponse> getGameStatistics() {
+
+        List<User> users = mockUserRepository.getAllUsers();
+        int totalGames = 0;
+        int totalWins = 0;
+        int totalLosses = 0;
+        List<GameStatistics> gameStatisticsList = new ArrayList<>();
+        for (User user : users) {
+            List<Game> games = mockGameRepository.getAllGamesOfUser(user.getUserId());
+            for (Game game : games) {
+                totalGames++;
+                if (game.getGameStatus() == GameStatus.WON) {
+                    totalWins++;
+                } else if (game.getGameStatus() == GameStatus.LOST) {
+                    totalLosses++;
+                }
+            }
+            GameStatistics gameStatistics = new GameStatistics(totalGames, totalWins, totalLosses, user.getDisplayName());
+            gameStatisticsList.add(gameStatistics);
+        }
+        return new ResponseEntity<GetGameStatisticsResponse>(
+                new GetGameStatisticsResponse(gameStatisticsList), HttpStatus.OK);
+        
     }
 }

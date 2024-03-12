@@ -120,6 +120,11 @@ public class MockUserRepository implements IUserRepository{
         return false;
     }
 
+    @Override
+    public List<User> getAllUsers() {
+        return users;
+    }
+
   
 
     

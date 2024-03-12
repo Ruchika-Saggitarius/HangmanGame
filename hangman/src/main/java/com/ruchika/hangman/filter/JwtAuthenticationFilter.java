@@ -38,13 +38,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String userId;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new UnauthorizedException("Unauthorized User");
+            filterChain.doFilter(request, response);
+            return;
         }
 
         jwt = authHeader.substring(7);
 
         if (!jwtService.isTokenValid(jwt)) {
-            throw new UnauthorizedException("Unauthorized User");
+            filterChain.doFilter(request, response);
+            return;
         }
 
         userId = jwtService.extractUserId(jwt);
@@ -52,7 +54,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(userId);
 
         if (userDetails == null) {
-            throw new UnauthorizedException("Unauthorized User");
+            filterChain.doFilter(request, response);
+            return;
         }
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(

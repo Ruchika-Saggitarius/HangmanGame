@@ -11,14 +11,16 @@ public class SaveGuessByUserResponse {
     private List<String> guessedAlphabets;
     private boolean isCorrectGuess;
     private GameStatus gameStatus;
+    private int score;
 
     public SaveGuessByUserResponse(String wordState, int remainingLives, List<String> guessedAlphabets,
-            boolean isCorrectGuess, GameStatus gameStatus) {
+            boolean isCorrectGuess, GameStatus gameStatus, int score) {
         this.wordState = wordState;
         this.remainingLives = remainingLives;
         this.guessedAlphabets = guessedAlphabets;
         this.isCorrectGuess = isCorrectGuess;
         this.gameStatus = gameStatus;
+        this.score = score;
     }
 
     public String getWordState() {
@@ -59,6 +61,14 @@ public class SaveGuessByUserResponse {
 
     public void setGameStatus(GameStatus gameStatus) {
         this.gameStatus = gameStatus;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
 }

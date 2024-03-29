@@ -6,12 +6,14 @@ public class GameStatistics {
     private int totalGamesWon;
     private int totalGamesLost;
     private String displayName;
+    private int totalScore;
 
-    public GameStatistics(int totalGamesPlayed, int totalGamesWon, int totalGamesLost, String displayName) {
+    public GameStatistics(int totalGamesPlayed, int totalGamesWon, int totalGamesLost, String displayName, int totalScore) {
         this.totalGamesPlayed = totalGamesPlayed;
         this.totalGamesWon = totalGamesWon;
         this.totalGamesLost = totalGamesLost;
         this.displayName = displayName;
+        this.totalScore = totalScore;
     }
 
     public int getTotalGamesPlayed() {
@@ -44,6 +46,14 @@ public class GameStatistics {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public int getTotalScore() {
+        return totalScore;
+    }
+
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
     }
     
 }

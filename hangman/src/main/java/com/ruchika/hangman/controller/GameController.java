@@ -55,7 +55,8 @@ public class GameController {
             throw new BadRequestException("No words available. Admin needs to add words to play the game.");
         }
         String gameId = UUID.randomUUID().toString();
-        Game game = new Game(gameId, word, 6, new ArrayList<String>(), userId, GameStatus.IN_PROGRESS);
+        int score = 0;
+        Game game = new Game(gameId, word, 6, new ArrayList<String>(), userId, GameStatus.IN_PROGRESS, score);
         mockGameRepository.createGame(game);
         return new NewGameResponse(game);
     }
@@ -111,9 +112,14 @@ public class GameController {
             List<String> guessedAlphabets = game.getGuessedAlphabets();
             boolean isCorrectGuess = wordState.contains(guess);
             int remainingLives = game.getRemainingLives();
+            int score = game.getScore();
             GameStatus gameStatus;
+            if(isCorrectGuess) {
+                score += 10;
+            }
             if (!isCorrectGuess) {
                 remainingLives--;
+                score -= 10;
             }
             if (wordState.equals(game.getWord().getWord())) {
                 gameStatus = GameStatus.WON;
@@ -124,9 +130,10 @@ public class GameController {
             }
             game.setRemainingLives(remainingLives);
             game.setGameStatus(gameStatus);
+            game.setScore(score);
             mockGameRepository.saveGame(gameId, game);
             return new ResponseEntity<SaveGuessByUserResponse>(new SaveGuessByUserResponse(wordState, remainingLives,
-                    guessedAlphabets, isCorrectGuess, gameStatus), HttpStatus.ACCEPTED);
+                    guessedAlphabets, isCorrectGuess, gameStatus, score), HttpStatus.ACCEPTED);
         }
     }
 
@@ -149,11 +156,12 @@ public class GameController {
     public ResponseEntity<GetGameStatisticsResponse> getGameStatistics() {
 
         List<User> users = mockUserRepository.getAllUsers();
-        int totalGames = 0;
-        int totalWins = 0;
-        int totalLosses = 0;
         List<GameStatistics> gameStatisticsList = new ArrayList<>();
         for (User user : users) {
+            int totalGames = 0;
+            int totalWins = 0;
+            int totalLosses = 0;
+            int totalScore = 0;
             List<Game> games = mockGameRepository.getAllGamesOfUser(user.getUserId());
             for (Game game : games) {
                 totalGames++;
@@ -162,8 +170,9 @@ public class GameController {
                 } else if (game.getGameStatus() == GameStatus.LOST) {
                     totalLosses++;
                 }
+                totalScore += game.getScore();
             }
-            GameStatistics gameStatistics = new GameStatistics(totalGames, totalWins, totalLosses, user.getDisplayName());
+            GameStatistics gameStatistics = new GameStatistics(totalGames, totalWins, totalLosses, user.getDisplayName(),totalScore);
             gameStatisticsList.add(gameStatistics);
         }
         return new ResponseEntity<GetGameStatisticsResponse>(

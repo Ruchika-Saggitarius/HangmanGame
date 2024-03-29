@@ -63,8 +63,9 @@ public class UserController {
             }
             else {
                 String userId = UUID.randomUUID().toString();
+                int totalScore = 0;
                 userRepository.saveUser(new User(userId, registerUserRequest.getDisplayName(), registerUserRequest.getEmail(),
-                registerUserRequest.getPassword(), registerUserRequest.getRole()));
+                registerUserRequest.getPassword(), registerUserRequest.getRole(), totalScore));
             }
     }
 

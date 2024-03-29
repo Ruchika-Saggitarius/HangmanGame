@@ -14,13 +14,15 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private Role role;
+    private int totalScore;
     
-    public User(String userId, String displayName, String email, String password, Role role) {
+    public User(String userId, String displayName, String email, String password, Role role, int totalScore) {
         this.userId = userId;
         this.displayName = displayName;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.totalScore = totalScore;
     }
 
     public String getUserId() {
@@ -90,6 +92,16 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public int getTotalScore() {
+        return totalScore;
+    }   
+
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
+    }
+
+
 
 
     

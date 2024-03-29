@@ -10,15 +10,17 @@ public class Game {
     private List<String> guessedAlphabets;
     private String userId;
     private GameStatus gameStatus;
+    private int score;
     
 
-    public Game(String gameId, Word word, int remainingLives, List<String> guessedAlphabets, String userId, GameStatus gameStatus) {
+    public Game(String gameId, Word word, int remainingLives, List<String> guessedAlphabets, String userId, GameStatus gameStatus, int score) {
         this.gameId = gameId;
         this.word = word;
         this.remainingLives = remainingLives;
         this.guessedAlphabets = guessedAlphabets;
         this.userId = userId;
         this.gameStatus = gameStatus;
+        this.score = score;
     }
 
     public String getUserId() {
@@ -64,6 +66,14 @@ public class Game {
         this.gameStatus = gameStatus;
     }
 
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+    
     public void addGuess(String guess) {
         guessedAlphabets.add(guess);
     }

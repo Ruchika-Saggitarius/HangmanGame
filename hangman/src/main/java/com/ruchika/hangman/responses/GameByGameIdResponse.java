@@ -9,13 +9,15 @@ public class GameByGameIdResponse {
     private String hint;
     private int remainingLives;
     private List<String> guessedAlphabets;
+    private int totalScore;
 
     public GameByGameIdResponse(String wordToDisplay, String hint, int remainingLives,
-            List<String> guessedAlphabets) {
+            List<String> guessedAlphabets, int totalScore) {
         this.wordToDisplay = wordToDisplay;
         this.hint = hint;
         this.remainingLives = remainingLives;
         this.guessedAlphabets = guessedAlphabets;
+        this.totalScore = totalScore;
     }
 
     public String getHint() {
@@ -48,5 +50,13 @@ public class GameByGameIdResponse {
 
     public void setWordToDisplay(String wordToDisplay) {
         this.wordToDisplay = wordToDisplay;
+    }
+
+    public int getTotalScore() {
+        return totalScore;
+    }
+
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
     }
 }

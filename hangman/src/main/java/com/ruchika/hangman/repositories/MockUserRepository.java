@@ -4,21 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-import com.ruchika.hangman.exceptions.BadRequestException;
 import com.ruchika.hangman.model.User;
 
-@Service
+@Repository
 public class MockUserRepository implements IUserRepository{
 
     List<User> users = new ArrayList<User>();
 
     @Override
     public void saveUser(User newUser) {
-        String originalPassword = newUser.getPassword();
-        String generatedSecuredPasswordHash = BCrypt.hashpw(originalPassword, BCrypt.gensalt(12));
-        newUser.setPassword(generatedSecuredPasswordHash);
         users.add(newUser);
     }
 
@@ -29,12 +25,9 @@ public class MockUserRepository implements IUserRepository{
                 if(BCrypt.checkpw(password, user.getPassword())) {
                     return user;
                 }
-                else{
-                throw new BadRequestException("Invalid Password. Please provide a valid password.");
-                } 
             }
         }
-        throw new BadRequestException("Invalid Email. Please provide a valid email.");
+        return null;
     }
 
     @Override
@@ -45,6 +38,17 @@ public class MockUserRepository implements IUserRepository{
             }
         }
         return null;
+    }
+
+    @Override
+    public User getUserByUserId(String userId) {
+        for(User user: users) {
+            if(user.getUserId().equals(userId)) {
+                return user;
+            }
+        }
+        return null;
+        
     }
 
     @Override
@@ -67,17 +71,6 @@ public class MockUserRepository implements IUserRepository{
     }
 
     @Override
-    public User getUserByUserId(String userId) {
-        for(User user: users) {
-            if(user.getUserId().equals(userId)) {
-                return user;
-            }
-        }
-        return null;
-        
-    }
-
-    @Override
     public void ResetPasswordOfUser(String userId, String oldPassword, String newPassword) {
         for(User user: users) {
             if(user.getUserId().equals(userId)) {
@@ -85,11 +78,7 @@ public class MockUserRepository implements IUserRepository{
                     String generatedSecuredPasswordHash = BCrypt.hashpw(newPassword, BCrypt.gensalt(12));
                     user.setPassword(generatedSecuredPasswordHash);
                 }
-                else{
-                    throw new BadRequestException("Invalid Password. Please provide a valid password.");
-                    }
             }
-        throw new BadRequestException("Invalid Email. Please provide a valid email.");
     }
         
     }
@@ -123,6 +112,28 @@ public class MockUserRepository implements IUserRepository{
     @Override
     public List<User> getAllUsers() {
         return users;
+    }
+
+    @Override
+    public boolean checkIfPasswordMatches(String userId, String password) {
+        for(User user: users) {
+            if(user.getUserId().equals(userId)) {
+                if(BCrypt.checkpw(password, user.getPassword())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean checkIfUserIdExists(String userId) {
+        for(User user: users) {
+            if(user.getUserId().equals(userId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
   

@@ -2,11 +2,11 @@ package com.ruchika.hangman.repositories;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import com.ruchika.hangman.model.User;
 
-@Service
+@Repository
 public interface IUserRepository {
 
     void saveUser(User newUser);
@@ -31,5 +31,8 @@ public interface IUserRepository {
 
     List<User> getAllUsers();
 
-    
+    boolean checkIfPasswordMatches(String userId, String password);
+
+    boolean checkIfUserIdExists(String userId);
+
 }

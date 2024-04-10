@@ -3,12 +3,12 @@ package com.ruchika.hangman.repositories;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import com.ruchika.hangman.model.Game;
 import com.ruchika.hangman.model.GameStatus;
 
-@Service
+@Repository
 public class MockGameRepository implements IGameRepository {
 
     List<Game> games;
@@ -25,8 +25,6 @@ public class MockGameRepository implements IGameRepository {
 
     @Override
     public void saveGame(String gameId, Game updatedGame) {
-        // int index = games.indexOf(updatedGame);
-        // games.set(index, updatedGame);
 
         for (int i=0; i<games.size();i++) {
             if (games.get(i).getGameId().equals(gameId)) {

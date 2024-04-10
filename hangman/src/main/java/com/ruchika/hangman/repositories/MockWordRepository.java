@@ -3,11 +3,11 @@ package com.ruchika.hangman.repositories;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import com.ruchika.hangman.model.Word;
 
-@Service
+@Repository
 public class MockWordRepository implements IWordRepository {
 
     List<Word> words = new ArrayList<Word>();

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ruchika.hangman.exceptions.BadRequestException;
+import com.ruchika.hangman.exceptions.NoWordsAvailableException;
 import com.ruchika.hangman.model.Game;
 import com.ruchika.hangman.model.GameStatistics;
 import com.ruchika.hangman.model.GameStatus;
@@ -42,8 +43,8 @@ public class GameService implements IGameService {
         try {
             word = wordRepository.getRandomWord();
             //TODO: this exception is tightly coupled with the repository implementation
-        } catch (Exception e) {
-            throw new BadRequestException("No words available. Admin needs to add words to play the game.");
+        } catch (NoWordsAvailableException e) {
+            throw new BadRequestException("No words available");
         }
         String gameId = UUID.randomUUID().toString();
         int score = 0;

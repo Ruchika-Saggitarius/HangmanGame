@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
+import com.ruchika.hangman.exceptions.NoWordsAvailableException;
 import com.ruchika.hangman.model.Word;
 
 @Repository
@@ -35,6 +36,9 @@ public class MySQLWordRepository implements IWordRepository{
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return new Word(resultSet.getString("wordId"), resultSet.getString("word"), resultSet.getString("hint"));
+            }
+            else {
+                throw new NoWordsAvailableException("No words available");
             }
         } catch (SQLException e) {
             e.printStackTrace();

@@ -1,5 +1,6 @@
 package com.ruchika.hangman.services;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,8 +55,12 @@ public class UserService implements IUserService{
                 int totalScore = 0;
                 String originalPassword = registerUserRequest.getPassword();
                 String generatedSecuredPasswordHash = BCrypt.hashpw(originalPassword, BCrypt.gensalt(12));
-                userRepository.saveUser(new User(userId, registerUserRequest.getDisplayName(), registerUserRequest.getEmail(),
-                generatedSecuredPasswordHash, registerUserRequest.getRole(), totalScore));
+                try {
+                    userRepository.saveUser(new User(userId, registerUserRequest.getDisplayName(), registerUserRequest.getEmail(),
+                    generatedSecuredPasswordHash, registerUserRequest.getRole(), totalScore));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
     }
 
@@ -83,7 +88,7 @@ public class UserService implements IUserService{
         if(userExist == false){
             throw new BadRequestException("Invalid userId. Please provide a valid userId.");
         }
-        User user = userRepository.getUserProfile(userId);
+        User user = userRepository.getUserByUserId(userId);
         if(user == null){
             throw new BadRequestException("Invalid userId. Please provide a valid userId.");
         }
@@ -127,9 +132,10 @@ public class UserService implements IUserService{
             throw new BadRequestException("Invalid password. Please provide a valid password.");
         }
         else{
-        userRepository.ResetPasswordOfUser(userId, resetPasswordRequest.getOldPassword(), resetPasswordRequest.getNewPassword());
+        String generatedSecuredPasswordHash = BCrypt.hashpw(resetPasswordRequest.getNewPassword(), BCrypt.gensalt(12));
+        userRepository.ResetPasswordOfUser(userId, generatedSecuredPasswordHash);
+        };
         }
     }
 
-}
 }

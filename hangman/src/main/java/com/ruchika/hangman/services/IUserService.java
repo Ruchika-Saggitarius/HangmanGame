@@ -1,6 +1,5 @@
 package com.ruchika.hangman.services;
 
-
 import org.springframework.stereotype.Service;
 
 import com.ruchika.hangman.model.User;

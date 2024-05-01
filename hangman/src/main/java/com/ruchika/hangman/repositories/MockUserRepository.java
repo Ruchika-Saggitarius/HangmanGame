@@ -61,27 +61,15 @@ public class MockUserRepository implements IUserRepository{
     }
 
     @Override
-    public User getUserProfile(String userId) {
+    public void ResetPasswordOfUser(String userId, String newHashedPassword) {
         for(User user: users) {
             if(user.getUserId().equals(userId)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public void ResetPasswordOfUser(String userId, String oldPassword, String newPassword) {
-        for(User user: users) {
-            if(user.getUserId().equals(userId)) {
-                if(BCrypt.checkpw(oldPassword, user.getPassword())) {
-                    String generatedSecuredPasswordHash = BCrypt.hashpw(newPassword, BCrypt.gensalt(12));
-                    user.setPassword(generatedSecuredPasswordHash);
+                    user.setPassword(newHashedPassword);
                 }
             }
     }
         
-    }
+    
 
     @Override
     public void ForgotPasswordSendLinkViaEmail(String email) {

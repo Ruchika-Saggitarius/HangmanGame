@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.ruchika.hangman.model.GameStatistics;
 
-// This class is used to get the game statistics of the user which gives how many games per user played, how many games won and how many games lost.
 public class GetGameStatisticsResponse {
 
     private List<GameStatistics> gameStatistics;

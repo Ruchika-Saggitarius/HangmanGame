@@ -1,5 +1,7 @@
 package com.ruchika.hangman.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import com.ruchika.hangman.responses.GetGameStatisticsResponse;
 import com.ruchika.hangman.responses.NewGameResponse;
 import com.ruchika.hangman.responses.SaveGuessByUserResponse;
 import com.ruchika.hangman.services.IGameService;
+import com.ruchika.hangman.model.Game;
 import com.ruchika.hangman.model.User;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,16 +36,17 @@ public class GameController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userId = ((User) auth.getPrincipal()).getUserId();
-        NewGameResponse newGame = gameService.getNewGame(userId);
-        return new ResponseEntity<NewGameResponse>(newGame, HttpStatus.OK);
+        Game newGame = gameService.getNewGame(userId);
+        return new ResponseEntity<NewGameResponse>(new NewGameResponse(newGame), HttpStatus.OK);
     }
 
     @GetMapping("/game/{gameId}")
     public ResponseEntity<GameByGameIdResponse> getGameByGameId(@PathVariable String gameId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userId = ((User) auth.getPrincipal()).getUserId();
-        GameByGameIdResponse gameResponse = gameService.getGameByGameId(userId, gameId);
-        return new ResponseEntity<GameByGameIdResponse>(gameResponse, HttpStatus.OK);
+        Game game = gameService.getGameByGameId(userId, gameId);
+        return new ResponseEntity<GameByGameIdResponse>(new GameByGameIdResponse(game.getWord().getObscuredWord(game.getGuessedAlphabets()),
+                 game.getWord().getHint(),game.getRemainingLives(), game.getGuessedAlphabets(), game.getScore()), HttpStatus.OK);
         
     }
 
@@ -50,8 +54,8 @@ public class GameController {
     public ResponseEntity<GetAllGamesOfUserResponse> getAllGamesOfUser(HttpServletRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userId = ((User) auth.getPrincipal()).getUserId();
-        GetAllGamesOfUserResponse userGame = gameService.getAllGamesOfUser(userId);
-        return new ResponseEntity<GetAllGamesOfUserResponse>(userGame, HttpStatus.OK);
+        List<Game> userGames = gameService.getAllGamesOfUser(userId);
+        return new ResponseEntity<GetAllGamesOfUserResponse>(new GetAllGamesOfUserResponse(userGames), HttpStatus.OK);
     }
 
     @PostMapping("/game/{gameId}/guess")

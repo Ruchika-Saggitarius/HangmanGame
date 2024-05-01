@@ -56,7 +56,6 @@ public class UserController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userId = ((User) auth.getPrincipal()).getUserId();
         userService.updateEmailOfUser(userId, updateEmailRequest);
-        // return ResponseEntity.ok(new UpdateEmailResponse("Email updated successfully"));
     }
 
     @PostMapping("/user/reset-password")
@@ -64,6 +63,5 @@ public class UserController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userId = ((User) auth.getPrincipal()).getUserId();
         userService.ResetPasswordOfUser(userId, resetPasswordRequest);
-        // return ResponseEntity.ok(new ResetPasswordResponse("Password reset successfully"));
     }
 }

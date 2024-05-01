@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.ruchika.hangman.exceptions.BadRequestException;
 import com.ruchika.hangman.model.Game;
@@ -16,12 +17,10 @@ import com.ruchika.hangman.repositories.IGameRepository;
 import com.ruchika.hangman.repositories.IUserRepository;
 import com.ruchika.hangman.repositories.IWordRepository;
 import com.ruchika.hangman.requests.GuessRequest;
-import com.ruchika.hangman.responses.GameByGameIdResponse;
-import com.ruchika.hangman.responses.GetAllGamesOfUserResponse;
 import com.ruchika.hangman.responses.GetGameStatisticsResponse;
-import com.ruchika.hangman.responses.NewGameResponse;
 import com.ruchika.hangman.responses.SaveGuessByUserResponse;
 
+@Service
 public class GameService implements IGameService {
 
     @Autowired
@@ -34,7 +33,7 @@ public class GameService implements IGameService {
     private IGameRepository gameRepository;
 
     @Override
-    public NewGameResponse getNewGame(String userId) {
+    public Game getNewGame(String userId) {
         boolean userIdExists = userRepository.checkIfUserIdExists(userId);
         if (!userIdExists) {
             throw new BadRequestException("User does not exist");
@@ -42,19 +41,19 @@ public class GameService implements IGameService {
         Word word;
         try {
             word = wordRepository.getRandomWord();
-            // this exception is tightly coupled with the repository implementation
-        } catch (IndexOutOfBoundsException e) {
+            //TODO: this exception is tightly coupled with the repository implementation
+        } catch (Exception e) {
             throw new BadRequestException("No words available. Admin needs to add words to play the game.");
         }
         String gameId = UUID.randomUUID().toString();
         int score = 0;
         Game game = new Game(gameId, word, 6, new ArrayList<String>(), userId, GameStatus.IN_PROGRESS, score);
         game = gameRepository.createGame(game);
-        return new NewGameResponse(game);
+        return game;
     }
 
     @Override
-    public GameByGameIdResponse getGameByGameId(String userId, String gameId) {
+    public Game getGameByGameId(String userId, String gameId) {
         boolean userIdExists = userRepository.checkIfUserIdExists(userId);
         if (!userIdExists) {
             throw new BadRequestException("User does not exist");
@@ -62,34 +61,21 @@ public class GameService implements IGameService {
         if (gameId.isEmpty()) {
             throw new BadRequestException("Invalid input. Please provide a valid game id.");
         }
-        // follow guard clause pattern, no need for else
-        else {
             Game game = gameRepository.getGameByGameId(gameId);
             if (game == null) {
                 throw new BadRequestException("Invalid game id. Please provide a valid game id.");
             }
-            // This check is not needed as the game object should be sent regardless of the
-            // status
-            if (game.getGameStatus() != GameStatus.IN_PROGRESS) {
-                throw new BadRequestException("Game already over. Please start a new game.");
-            }
-            // it is the responsibility of the controller to decide what to do with the
-            // response, just return the game object.
-            // do this everywhere.
-            return new GameByGameIdResponse(game.getWord().getObscuredWord(game.getGuessedAlphabets()),
-                    game.getWord().getHint(),
-                    game.getRemainingLives(), game.getGuessedAlphabets(), game.getScore());
-        }
+            return game;
     }
 
     @Override
-    public GetAllGamesOfUserResponse getAllGamesOfUser(String userId) {
+    public List<Game> getAllGamesOfUser(String userId) {
         boolean userIdExists = userRepository.checkIfUserIdExists(userId);
         if (!userIdExists) {
             throw new BadRequestException("User does not exist");
         }
         List<Game> games = gameRepository.getAllGamesOfUser(userId);
-        return new GetAllGamesOfUserResponse(games);
+        return games;
     }
 
     @Override

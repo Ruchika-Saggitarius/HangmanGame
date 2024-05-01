@@ -29,13 +29,11 @@ public class WordController {
     @PostMapping("/word")
     public void addWord(@RequestBody AddWordRequest addWordRequest) {
         wordService.addWord(addWordRequest);
-        // return ResponseEntity.ok(new AddWordResponse("Word added successfully"));
     }
 
     @PostMapping("/word/{wordId}")
     public void deleteWord(@PathVariable String wordId) {
-
-        //implement the delete word functionality
+        wordService.deleteWord(wordId);
         
     }    
 }

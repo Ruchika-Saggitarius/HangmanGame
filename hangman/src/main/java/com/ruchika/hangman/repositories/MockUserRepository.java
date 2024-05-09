@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 
+import com.ruchika.hangman.model.RequestStatus;
 import com.ruchika.hangman.model.User;
 
 @Repository
@@ -14,8 +15,9 @@ public class MockUserRepository implements IUserRepository{
     List<User> users = new ArrayList<User>();
 
     @Override
-    public void saveUser(User newUser) {
+    public RequestStatus saveUser(User newUser) {
         users.add(newUser);
+        return RequestStatus.SUCCESS;
     }
 
     @Override
@@ -52,30 +54,32 @@ public class MockUserRepository implements IUserRepository{
     }
 
     @Override
-    public void updateEmailOfUser(String userId, String newEmail) {
+    public RequestStatus updateEmailOfUser(String userId, String newEmail) {
         for(User user: users) {
             if(user.getUserId().equals(userId)) {
                 user.setEmail(newEmail);
             }
         }
+        return RequestStatus.SUCCESS;
     }
 
     @Override
-    public void ResetPasswordOfUser(String userId, String newHashedPassword) {
+    public RequestStatus ResetPasswordOfUser(String userId, String newHashedPassword) {
         for(User user: users) {
             if(user.getUserId().equals(userId)) {
                     user.setPassword(newHashedPassword);
                 }
             }
+        return RequestStatus.SUCCESS;
     }
         
     
 
-    @Override
-    public void ForgotPasswordSendLinkViaEmail(String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'ForgotPasswordSendLinkViaEmail'");
-    }
+    // @Override
+    // public String ForgotPasswordSendLinkViaEmail(String email) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'ForgotPasswordSendLinkViaEmail'");
+    // }
 
     @Override
     public boolean checkIfEmailExists(String email) {

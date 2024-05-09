@@ -2,7 +2,7 @@ package com.ruchika.hangman.responses;
 
 import com.ruchika.hangman.model.Game;
 
-public class NewGameResponse {
+public class NewGameResponse{
 
     private String gameId;
 
@@ -17,5 +17,4 @@ public class NewGameResponse {
     public void setGameId(String gameId) {
         this.gameId = gameId;
     }
-    
 }

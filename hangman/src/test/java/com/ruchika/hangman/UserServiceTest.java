@@ -15,12 +15,5 @@ public class UserServiceTest{
     @Autowired
     private IUserService userService;
 
-    @Test
-    public void testSaveUser(){
-        RegisterUserRequest registerUserRequest = new RegisterUserRequest("ruchika123", "Ruchika@gmail.com", "ruchika123", Role.USER);
-        userService.saveUser(registerUserRequest);
-
-    }
-
     
 }

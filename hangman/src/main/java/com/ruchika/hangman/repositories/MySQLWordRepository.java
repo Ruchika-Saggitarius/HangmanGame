@@ -9,10 +9,13 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import com.ruchika.hangman.exceptions.NoWordsAvailableException;
+import com.ruchika.hangman.model.RequestStatus;
 import com.ruchika.hangman.model.Word;
 
 @Repository
@@ -22,6 +25,8 @@ public class MySQLWordRepository implements IWordRepository{
     Connection connection;
     PreparedStatement statement;
     DataSource dataSource;
+    
+    private static final Logger logger = LogManager.getLogger(MySQLWordRepository.class);
 
     public MySQLWordRepository(DataSource dataSource) throws SQLException {
         this.dataSource = dataSource;
@@ -30,27 +35,23 @@ public class MySQLWordRepository implements IWordRepository{
 
 
     @Override
-    public Word getRandomWord() {
+    public Word getRandomWord() throws NoWordsAvailableException {
         try {
             statement = connection.prepareStatement("SELECT * FROM word ORDER BY RAND() LIMIT 1");
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
+                logger.info("Word found");
                 return new Word(resultSet.getString("wordId"), resultSet.getString("word"), resultSet.getString("hint"));
             }
             else {
+                logger.error("No words available");
                 throw new NoWordsAvailableException("No words available");
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            logger.error("Error in getting random word");
+            throw new RuntimeException("Error in getting random word");
         }
-        finally {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } 
-    }
-        return null;
     }
 
     @Override
@@ -62,48 +63,48 @@ public class MySQLWordRepository implements IWordRepository{
             while (resultSet.next()) {
                 words.add(new Word(resultSet.getString("wordId"), resultSet.getString("word"), resultSet.getString("hint")));
             }
+            logger.info("All words fetched");
+            return words;
         } catch (SQLException e) {
             e.printStackTrace();
+            logger.error("Error in getting all words");
+            throw new RuntimeException("Error in getting all words");
         }
-        finally {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } 
-    }
-        return words;
+        
     }
 
     @Override
-    public void addWord(Word newWord) {
+    public RequestStatus addWord(Word newWord) {
         try {
             statement = connection.prepareStatement("INSERT INTO word (wordId, word, hint) VALUES (?, ?, ?)");
             statement.setString(1, newWord.getWordId());
             statement.setString(2, newWord.getWord());
             statement.setString(3, newWord.getHint());
             statement.executeUpdate();
+            logger.info("Word added successfully");
+            return RequestStatus.SUCCESS;
         } catch (SQLException e) {
             e.printStackTrace();
+            logger.error("Error in adding word");
+            throw new RuntimeException("Error in adding word");
         }
+        
     }
 
     @Override
-    public void deleteWord(String wordId) {
+    public RequestStatus deleteWord(String wordId) {
         try {
             statement = connection.prepareStatement("DELETE FROM word WHERE wordId = ?");
             statement.setString(1, wordId);
             statement.executeUpdate();
+            logger.info("Word deleted successfully");
+            return RequestStatus.SUCCESS;
         } catch (SQLException e) {
             e.printStackTrace();
+            logger.error("Error in deleting word");
+            throw new RuntimeException("Error in deleting word");
         }
-        finally {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } 
-    }
+        
     }
 
     @Override
@@ -115,15 +116,9 @@ public class MySQLWordRepository implements IWordRepository{
             return resultSet.next();
         } catch (SQLException e) {
             e.printStackTrace();
+            logger.error("Error in checking if word exists");
+            throw new RuntimeException("Error in checking if word exists");
         }
-        finally {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } 
-    }
-        return false;
     }
 
     @Override
@@ -135,14 +130,8 @@ public class MySQLWordRepository implements IWordRepository{
             return resultSet.next();
         } catch (SQLException e) {
             e.printStackTrace();
+            logger.error("Error in checking if wordId exists");
+            throw new RuntimeException("Error in checking if wordId exists");
         }
-        finally {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } 
-    }
-        return false;
     }
 }

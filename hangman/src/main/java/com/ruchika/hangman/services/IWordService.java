@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.ruchika.hangman.exceptions.InvalidInputException;
 import com.ruchika.hangman.model.Word;
 import com.ruchika.hangman.requests.AddWordRequest;
 
@@ -12,7 +13,7 @@ public interface IWordService {
 
     List<Word> getAllWords();
 
-    void addWord(AddWordRequest addWordRequest);
+    void addWord(AddWordRequest addWordRequest) throws InvalidInputException;
 
-    void deleteWord(String wordId);    
+    void deleteWord(String wordId) throws InvalidInputException;    
 }

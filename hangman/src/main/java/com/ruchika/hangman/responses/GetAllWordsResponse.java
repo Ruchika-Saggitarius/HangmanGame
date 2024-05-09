@@ -8,15 +8,15 @@ public class GetAllWordsResponse {
 
     private List<Word> words;
 
+    public GetAllWordsResponse(List<Word> words) {
+        this.words = words;
+    }
+
     public List<Word> getWords() {
         return words;
     }
 
     public void setWords(List<Word> words) {
-        this.words = words;
-    }
-
-    public GetAllWordsResponse(List<Word> words) {
         this.words = words;
     }
     

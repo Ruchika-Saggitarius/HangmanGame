@@ -7,8 +7,9 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ruchika.hangman.exceptions.BadRequestException;
+import com.ruchika.hangman.exceptions.InvalidInputException;
 import com.ruchika.hangman.exceptions.NoWordsAvailableException;
+import com.ruchika.hangman.exceptions.UserDoesNotExistException;
 import com.ruchika.hangman.model.Game;
 import com.ruchika.hangman.model.GameStatistics;
 import com.ruchika.hangman.model.GameStatus;
@@ -18,8 +19,7 @@ import com.ruchika.hangman.repositories.IGameRepository;
 import com.ruchika.hangman.repositories.IUserRepository;
 import com.ruchika.hangman.repositories.IWordRepository;
 import com.ruchika.hangman.requests.GuessRequest;
-import com.ruchika.hangman.responses.GetGameStatisticsResponse;
-import com.ruchika.hangman.responses.SaveGuessByUserResponse;
+import com.ruchika.hangman.responses.GuessResponse;
 
 @Service
 public class GameService implements IGameService {
@@ -34,18 +34,13 @@ public class GameService implements IGameService {
     private IGameRepository gameRepository;
 
     @Override
-    public Game getNewGame(String userId) {
+    public Game getNewGame(String userId) throws NoWordsAvailableException, UserDoesNotExistException{
         boolean userIdExists = userRepository.checkIfUserIdExists(userId);
         if (!userIdExists) {
-            throw new BadRequestException("User does not exist");
+            throw new UserDoesNotExistException("User does not exist");
         }
         Word word;
-        try {
-            word = wordRepository.getRandomWord();
-            //TODO: this exception is tightly coupled with the repository implementation
-        } catch (NoWordsAvailableException e) {
-            throw new BadRequestException("No words available");
-        }
+        word = wordRepository.getRandomWord();
         String gameId = UUID.randomUUID().toString();
         int score = 0;
         Game game = new Game(gameId, word, 6, new ArrayList<String>(), userId, GameStatus.IN_PROGRESS, score);
@@ -54,49 +49,49 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public Game getGameByGameId(String userId, String gameId) {
+    public Game getGameByGameId(String userId, String gameId) throws InvalidInputException, UserDoesNotExistException{
         boolean userIdExists = userRepository.checkIfUserIdExists(userId);
         if (!userIdExists) {
-            throw new BadRequestException("User does not exist");
+            throw new UserDoesNotExistException("User does not exist");
         }
         if (gameId.isEmpty()) {
-            throw new BadRequestException("Invalid input. Please provide a valid game id.");
+            throw new InvalidInputException("Invalid input. Please provide a valid game id.");
         }
             Game game = gameRepository.getGameByGameId(gameId);
             if (game == null) {
-                throw new BadRequestException("Invalid game id. Please provide a valid game id.");
+                throw new InvalidInputException("Invalid game id. Please provide a valid game id.");
             }
             return game;
     }
 
     @Override
-    public List<Game> getAllGamesOfUser(String userId) {
+    public List<Game> getAllGamesOfUser(String userId) throws UserDoesNotExistException{
         boolean userIdExists = userRepository.checkIfUserIdExists(userId);
         if (!userIdExists) {
-            throw new BadRequestException("User does not exist");
+            throw new UserDoesNotExistException("User does not exist");
         }
         List<Game> games = gameRepository.getAllGamesOfUser(userId);
         return games;
     }
 
     @Override
-    public SaveGuessByUserResponse saveGuessByUser(String userId, String gameId, GuessRequest guessRequest) {
+    public GuessResponse saveGuessByUser(String userId, String gameId, GuessRequest guessRequest) throws InvalidInputException, UserDoesNotExistException{
         boolean userIdExists = userRepository.checkIfUserIdExists(userId);
         if (!userIdExists) {
-            throw new BadRequestException("User does not exist");
+            throw new UserDoesNotExistException("User does not exist");
         }
         if (gameId.isEmpty() || guessRequest.getGuess().isEmpty()) {
-            throw new BadRequestException("Invalid input. Please provide a valid game id and guess.");
+            throw new InvalidInputException("Invalid input. Please provide a valid game id and guess.");
         }
         Game requestedGame = gameRepository.getGameByGameId(gameId);
         if (requestedGame == null) {
-            throw new BadRequestException("Invalid game id. Please provide a valid game id.");
+            throw new InvalidInputException("Invalid game id. Please provide a valid game id.");
         } else if (requestedGame.getGameStatus() != GameStatus.IN_PROGRESS) {
-            throw new BadRequestException("Game already over. Please start a new game.");
+            throw new InvalidInputException("Game already over. Please start a new game.");
         } else if (guessRequest.getGuess().length() != 1 || !Character.isLetter(guessRequest.getGuess().charAt(0))) {
-            throw new BadRequestException("Only single alphabet is allowed as guess");
+            throw new InvalidInputException("Only single alphabet is allowed as guess");
         } else if (gameRepository.checkIfGuessAlreadyMade(gameId, guessRequest.getGuess().toLowerCase())) {
-            throw new BadRequestException("Guess already made. Please provide a different guess.");
+            throw new InvalidInputException("Guess already made. Please provide a different guess.");
         } else {
             String guess = guessRequest.getGuess().toLowerCase();
             Game game = gameRepository.saveGuessByUser(guess, gameId);
@@ -123,28 +118,28 @@ public class GameService implements IGameService {
             game.setGameStatus(gameStatus);
             game.setScore(score);
             gameRepository.saveGame(gameId, game);
-            return new SaveGuessByUserResponse(wordState, remainingLives, game.getGuessedAlphabets(), isCorrectGuess,
-                    gameStatus, score);
+            return new GuessResponse(game, isCorrectGuess);
         }
     }
 
     @Override
-    public void quitGame(String gameId) {
+    public String quitGame(String gameId) throws InvalidInputException{
         if (gameId.isEmpty()) {
-            throw new BadRequestException("Invalid input. Please provide a valid game id and guess.");
+            throw new InvalidInputException("Invalid input. Please provide a valid game id and guess.");
         }
         Game game = gameRepository.getGameByGameId(gameId);
         if (game == null) {
-            throw new BadRequestException("Invalid game id. Please provide a valid game id.");
+            throw new InvalidInputException("Invalid game id. Please provide a valid game id.");
         }
         if (game.getGameStatus() != GameStatus.IN_PROGRESS) {
-            throw new BadRequestException("Game is already over!!");
+            throw new InvalidInputException("Game is already over!!");
         }
         gameRepository.quitGame(gameId);
+        return "Game quit successfully";
     }
 
     @Override
-    public GetGameStatisticsResponse getGameStatistics() {
+    public List<GameStatistics> getGameStatistics() {
         List<User> users = userRepository.getAllUsers();
         List<GameStatistics> gameStatisticsList = new ArrayList<>();
         for (User user : users) {
@@ -166,7 +161,7 @@ public class GameService implements IGameService {
                     user.getDisplayName(), totalScore);
             gameStatisticsList.add(gameStatistics);
         }
-        return new GetGameStatisticsResponse(gameStatisticsList);
+        return gameStatisticsList;
 
     }
 

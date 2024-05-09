@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.ruchika.hangman.model.Game;
 import com.ruchika.hangman.model.GameStatus;
+import com.ruchika.hangman.model.RequestStatus;
 
 @Repository
 public class MockGameRepository implements IGameRepository {
@@ -24,13 +25,13 @@ public class MockGameRepository implements IGameRepository {
     }
 
     @Override
-    public void saveGame(String gameId, Game updatedGame) {
-
+    public RequestStatus saveGame(String gameId, Game updatedGame) {
         for (int i=0; i<games.size();i++) {
             if (games.get(i).getGameId().equals(gameId)) {
                 games.set(i, updatedGame);
             }
         }
+        return RequestStatus.SUCCESS;
     }
 
     @Override
@@ -66,12 +67,13 @@ public class MockGameRepository implements IGameRepository {
     }
 
     @Override
-    public void quitGame(String gameId) {
+    public RequestStatus quitGame(String gameId) {
         for (Game game : games) {
             if (game.getGameId().equals(gameId)) {
                 game.setGameStatus(GameStatus.QUIT);
             }
         }
+        return RequestStatus.SUCCESS;
     }
 
     @Override

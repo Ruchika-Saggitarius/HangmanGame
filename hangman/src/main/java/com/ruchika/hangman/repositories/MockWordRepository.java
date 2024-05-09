@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.ruchika.hangman.exceptions.NoWordsAvailableException;
+import com.ruchika.hangman.model.RequestStatus;
 import com.ruchika.hangman.model.Word;
 
 @Repository
@@ -19,7 +20,7 @@ public class MockWordRepository implements IWordRepository {
     }
 
     @Override
-    public Word getRandomWord() {
+    public Word getRandomWord() throws NoWordsAvailableException {
         if(words.isEmpty()) {
             throw new NoWordsAvailableException("No words available");
         }
@@ -33,18 +34,20 @@ public class MockWordRepository implements IWordRepository {
     }
 
     @Override
-    public void addWord(Word newWord) {
+    public RequestStatus addWord(Word newWord) {
         words.add(newWord);
+        return RequestStatus.SUCCESS;
     }
 
     @Override
-    public void deleteWord(String wordId) {
+    public RequestStatus deleteWord(String wordId) {
         for (Word word : words) {
             if (word.getWordId().equals(wordId)) {
                 words.remove(word);
                 break;
             }
         }
+        return RequestStatus.SUCCESS;
     }
 
     @Override

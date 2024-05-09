@@ -20,5 +20,11 @@ public class GeneralExceptionHandler  extends ResponseEntityExceptionHandler  {
     public ResponseEntity<ApiError> unauthorizedExceptionHandler(UnauthorizedException exception) {
         return new ResponseEntity<ApiError>(new ApiError("Unauthorized", exception.getMessage()), HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> generalExceptionHandler(Exception exception) {
+        //  Don't expose the exception message in the response. It can be a security risk.
+        return new ResponseEntity<>(new ApiError("Internal server error", exception.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     
 }

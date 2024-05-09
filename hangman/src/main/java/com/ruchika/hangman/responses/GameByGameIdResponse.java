@@ -3,6 +3,7 @@ package com.ruchika.hangman.responses;
 import java.util.List;
 
 
+
 public class GameByGameIdResponse {
 
     private String wordToDisplay;
@@ -59,4 +60,5 @@ public class GameByGameIdResponse {
     public void setTotalScore(int totalScore) {
         this.totalScore = totalScore;
     }
+
 }

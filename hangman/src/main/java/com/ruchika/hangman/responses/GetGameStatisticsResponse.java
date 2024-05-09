@@ -8,7 +8,6 @@ public class GetGameStatisticsResponse {
 
     private List<GameStatistics> gameStatistics;
 
-
     public GetGameStatisticsResponse(List<GameStatistics> gameStatistics) {
         this.gameStatistics = gameStatistics;
     }
@@ -20,4 +19,5 @@ public class GetGameStatisticsResponse {
     public void setGameStatistics(List<GameStatistics> gameStatistics) {
         this.gameStatistics = gameStatistics;
     }
+
 }

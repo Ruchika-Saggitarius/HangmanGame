@@ -1,5 +1,6 @@
 package com.ruchika.hangman.responses;
 
+
 public class LoginResponse {
     
 

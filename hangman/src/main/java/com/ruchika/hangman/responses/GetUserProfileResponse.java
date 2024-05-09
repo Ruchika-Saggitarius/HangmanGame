@@ -5,9 +5,7 @@ import com.ruchika.hangman.model.Role;
 public class GetUserProfileResponse {
 
     private String email;
-
     private String displayName;
-
     private Role role;
 
     public GetUserProfileResponse(String email, String displayName, Role role) {

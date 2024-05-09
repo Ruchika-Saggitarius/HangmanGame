@@ -1,8 +1,9 @@
 openapi: 3.1.0
+
 info:
   title: 'Hangman Game API'
   version: '1.0.0'
-  description: 'An API for Hangman Game that allows admin to do Words Management, see game statistics and allows users to resgister, login, play hangman game, and see leaderboard.'
+  description: 'Backend APIs for Hangman Game that allows admin to perform Words Management and see view statistics whereas for users, it allows them to do registeration, login , view profile, update profile, forgot-password, reset-password, play hangman game, and see leaderboard.'
   termsOfService: 'https://hangman.com/terms-of-use'
   contact:
     name: 'Ruchika'
@@ -13,8 +14,8 @@ info:
     url: 'http://www.hangman.org/licenses/LICENSE-2.0.html'
 
 servers:
-  - url: 'http://localhost:8080'
-    description: 'Local server for development purpose only'
+  - url: 'https://hangman.com'
+    description: 'Hangman Game URL'
 
 tags: 
   - name: 'user'
@@ -30,6 +31,7 @@ paths:
 
   /register:
     post:
+      security: []
       tags: [user]
       description: Register new user to Hangman Game
       summary: Register new user to Hangman Game
@@ -43,12 +45,21 @@ paths:
         201:
           description: Sucessfully registered new user !!
         400:
-          description: Bad Request - Invalid Input
+          description: 'Bad Request - Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
         500:
-          description: Internal Server Error
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
   
   /login:
     post:
+      security: []
       tags: [user]
       description: Login user into Hangman Game
       summary: Login user into Hangman Game
@@ -64,45 +75,27 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Login'
+                properties:
+                  token:
+                    type: string
         400:
-          description: Bad Request - Invalid Input
+          description: 'Bad Request - Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
         500:
-          description: Internal Server Error
-          
-  /logout:
-    post:
-      tags: [user]
-      description: Logout user from Hangman Game
-      summary: Logout user from Hangman Game
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                userId:
-                  type: string
-      responses:
-        200:
-          description: Successfully Logout !!
-        400:
-          description: Bad Request - Invalid Input
-        500:
-          description: Internal Server Error
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
   
-  /user/{userId}:
+  /user/profile:
     get:
       tags: [user]
       summary: 'Get profile of user'
       description: 'Get profile of user'
-      parameters: 
-        - name: userId
-          description: 'User ID'
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         200:
           description: Success !!
@@ -110,21 +103,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserDetails'
+        401:
+          description: 'Unauthorized access'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        403:
+          description: 'Request Forbidden'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'       
         500:
-          description: Internal Server Error
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
   
-  /user/{userId}/email:
+  /user/email:
     post:
       tags: [user]
       summary: 'Update email of user'
       description: 'Update email of user'
-      parameters: 
-        - name: userId
-          description: 'User ID'
-          in: path
-          required: true
-          schema:
-            type: string
       requestBody:
         required: true
         content:
@@ -133,43 +135,80 @@ paths:
               properties:
                 email:
                   type: string
+                  pattern: .+@.+\..+
                   example: ruchika@gmail.com
       responses:
         200:
           description: 'Email updated successfully'
         400:
-          description: Bad Request - Invalid Input
+          description: 'Bad Request - Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        401:
+          description: 'Unauthorized access'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        403:
+          description: 'Request Forbidden'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'       
         500:
-          description: Internal Server Error
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
           
-  /user/{userId}/password:
+  /user/reset-password:
     post:
       tags: [user]
       summary: 'Update password of user'
       description: 'Update password of user'
-      parameters: 
-        - name: userId
-          description: 'User ID'
-          in: path
-          required: true
-          schema:
-            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
               properties:
-                password:
+                oldPassword:
+                  type: string
+                  example: admin
+                newPassword:
                   type: string
                   example: admin
       responses:
         200:
           description: 'Password updated successfully'
         400:
-          description: Bad Request - Invalid Input
+          description: 'Bad Request - Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        401:
+          description: 'Unauthorized access'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        403:
+          description: 'Request Forbidden'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'       
         500:
-          description: Internal Server Error
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
           
   /user/forgot-password:
     post:
@@ -190,8 +229,28 @@ paths:
           description: 'Password reset mail sent successfully'
         400:
           description: 'Bad Request - Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        401:
+          description: 'Unauthorized access'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        403:
+          description: 'Request Forbidden'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'       
         500:
           description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
           
   /word:
     post:
@@ -208,8 +267,28 @@ paths:
           description: 'Word added successfully'
         400:
           description: 'Bad Request - Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        401:
+          description: 'Unauthorized access'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        403:
+          description: 'Request Forbidden'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'       
         500:
           description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
         
   /word/{word}:
     post:
@@ -228,8 +307,28 @@ paths:
           description: 'Word Removed successfully'
         400:
           description: 'Bad Request - Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        401:
+          description: 'Unauthorized access'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        403:
+          description: 'Request Forbidden'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'       
         500:
           description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
           
   /words:
     get:
@@ -243,8 +342,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WordDetails'
+        401:
+          description: 'Unauthorized access'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        403:
+          description: 'Request Forbidden'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'       
         500:
           description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
   
   /game-statistics:
     get:
@@ -258,6 +373,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GameStatistics'
+        401:
+          description: 'Unauthorized access'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        403:
+          description: 'Request Forbidden'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'       
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
                 
   /game:
     get:
@@ -410,13 +543,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDetails'   
-        404:
-          description: 'Invalid Game ID'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDetails'      
+                $ref: '#/components/schemas/ErrorDetails'       
         500:
           description: 'Internal Server Error'
           content:
@@ -450,12 +577,6 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDetails'  
-        404:
-          description: 'Invalid Game ID'
-          content:
-            application/json:
-              schema:
                 $ref: '#/components/schemas/ErrorDetails'       
         500:
           description: 'Internal Server Error'
@@ -468,7 +589,7 @@ components:
   schemas:
     User:
       properties:
-        username:
+        displayname:
           type: string
           example: ruchika
         email:
@@ -482,16 +603,14 @@ components:
       properties:
         email:
           type: string
+          pattern: .+@.+\..+
           example: ruchika@gmail.com
         password:
           type: string
           example: admin
     UserDetails:
       properties:
-        userId:
-          type: string
-          example: abc123
-        username:
+        displayName:
           type: string
           example: ruchika
         email:
@@ -554,3 +673,11 @@ components:
           type: string
         message:
           type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+security: 
+  - bearerAuth: []

@@ -17,7 +17,6 @@ import com.ruchika.hangman.responses.GetAllWordsResponse;
 import com.ruchika.hangman.services.IWordService;
 import com.ruchika.hangman.exceptions.BadRequestException;
 import com.ruchika.hangman.exceptions.InvalidInputException;
-import com.ruchika.hangman.model.RequestStatus;
 import com.ruchika.hangman.model.Word;
 
 @RestController
@@ -36,8 +35,8 @@ public class WordController {
     @PostMapping("/word")
     public ResponseEntity<AddWordResponse> addWord(@RequestBody AddWordRequest addWordRequest) {
         try {
-            wordService.addWord(addWordRequest);
-            return ResponseEntity.ok(new AddWordResponse(RequestStatus.SUCCESS));
+            Word word = wordService.addWord(addWordRequest);
+            return ResponseEntity.ok(new AddWordResponse(word));
         } catch (InvalidInputException e) {
             throw new BadRequestException(e.getMessage());
         }
@@ -48,8 +47,8 @@ public class WordController {
     @PostMapping("/word/{wordId}")
     public ResponseEntity<DeleteWordResponse> deleteWord(@PathVariable String wordId) {
         try {
-            wordService.deleteWord(wordId);
-            return ResponseEntity.ok(new DeleteWordResponse(RequestStatus.SUCCESS));
+            String deletedWordId = wordService.deleteWord(wordId);
+            return ResponseEntity.ok(new DeleteWordResponse(deletedWordId));
         } catch (InvalidInputException e) {
             throw new BadRequestException(e.getMessage());
         }

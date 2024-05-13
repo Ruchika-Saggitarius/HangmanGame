@@ -1,21 +1,21 @@
 package com.ruchika.hangman.responses;
 
-import com.ruchika.hangman.model.RequestStatus;
+import com.ruchika.hangman.model.Word;
 
 public class AddWordResponse {
 
-    private RequestStatus requestStatus;
+    private Word word;
 
-    public AddWordResponse(RequestStatus requestStatus) {
-        this.requestStatus = requestStatus;
+    public AddWordResponse(Word word) {
+        this.word = word;
     }
 
-    public RequestStatus getRequestStatus() {
-        return requestStatus;
+    public Word getWord() {
+        return word;
     }
 
-    public void setRequestStatus(RequestStatus requestStatus) {
-        this.requestStatus = requestStatus;
+    public void setWord(Word word) {
+        this.word = word;
     }
     
 }

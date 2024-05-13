@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.ruchika.hangman.model.RequestStatus;
+import com.ruchika.hangman.model.DatabaseRequestStatus;
 import com.ruchika.hangman.model.User;
 
 @Repository
 public interface IUserRepository {
 
-    RequestStatus saveUser(User newUser);
+    DatabaseRequestStatus saveUser(User newUser);
 
     User loginUser(String email, String password);
 
@@ -18,9 +18,9 @@ public interface IUserRepository {
 
     User getUserByUserId(String userId);
 
-    RequestStatus updateEmailOfUser(String userId, String newEmail);
+    DatabaseRequestStatus updateEmailOfUser(String userId, String newEmail);
 
-    RequestStatus ResetPasswordOfUser(String userId, String newHashedPassword);
+    DatabaseRequestStatus ResetPasswordOfUser(String userId, String newHashedPassword);
 
     // String ForgotPasswordSendLinkViaEmail(String email);
 

@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ruchika.hangman.exceptions.BadRequestException;
 import com.ruchika.hangman.exceptions.InvalidInputException;
-import com.ruchika.hangman.exceptions.UserDoesNotExistException;
-import com.ruchika.hangman.model.RequestStatus;
 import com.ruchika.hangman.model.User;
 
 import com.ruchika.hangman.requests.LoginUserRequest;
@@ -41,8 +39,8 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<RegisterUserResponse> registerUser(@RequestBody RegisterUserRequest registerUserRequest) {
         try {
-            userService.saveUser(registerUserRequest);
-            return ResponseEntity.ok(new RegisterUserResponse(RequestStatus.SUCCESS));
+            User user = userService.saveUser(registerUserRequest);
+            return ResponseEntity.ok(new RegisterUserResponse(user));
         } catch (InvalidInputException e) {
             throw new BadRequestException(e.getMessage());
         }
@@ -64,13 +62,8 @@ public class UserController {
     public ResponseEntity<GetUserProfileResponse> getUserProfile(HttpServletRequest request){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userId = ((User) auth.getPrincipal()).getUserId();
-        try{
-            User user = userService.getUserProfile(userId);
-            return ResponseEntity.ok(new GetUserProfileResponse(user.getEmail(),user.getDisplayName(), user.getRole())); 
-        } catch (UserDoesNotExistException e) {
-            throw new BadRequestException(e.getMessage());
-        }
-
+        User user = userService.getUserProfile(userId);
+        return ResponseEntity.ok(new GetUserProfileResponse(user.getEmail(),user.getDisplayName(), user.getRole())); 
     }
 
     @PostMapping("/user/email")
@@ -78,9 +71,9 @@ public class UserController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userId = ((User) auth.getPrincipal()).getUserId();
         try{
-            userService.updateEmailOfUser(userId, updateEmailRequest);
-            return ResponseEntity.ok(new UpdateEmailOfUserResponse(RequestStatus.SUCCESS));
-        } catch (InvalidInputException | UserDoesNotExistException e) {
+            User user = userService.updateEmailOfUser(userId, updateEmailRequest);
+            return ResponseEntity.ok(new UpdateEmailOfUserResponse(user));
+        } catch (InvalidInputException e) {
             throw new BadRequestException(e.getMessage());
         }
         
@@ -91,9 +84,9 @@ public class UserController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userId = ((User) auth.getPrincipal()).getUserId();
         try{
-            userService.ResetPasswordOfUser(userId, resetPasswordRequest);
-            return ResponseEntity.ok(new ResetPasswordResponse(RequestStatus.SUCCESS));
-        } catch (InvalidInputException | UserDoesNotExistException e) {
+            User user = userService.ResetPasswordOfUser(userId, resetPasswordRequest);
+            return ResponseEntity.ok(new ResetPasswordResponse(user));
+        } catch (InvalidInputException e) {
             throw new BadRequestException(e.getMessage());
         
         }

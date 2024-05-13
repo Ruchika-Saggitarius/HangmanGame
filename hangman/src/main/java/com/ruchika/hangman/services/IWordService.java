@@ -13,7 +13,7 @@ public interface IWordService {
 
     List<Word> getAllWords();
 
-    void addWord(AddWordRequest addWordRequest) throws InvalidInputException;
+    Word addWord(AddWordRequest addWordRequest) throws InvalidInputException;
 
-    void deleteWord(String wordId) throws InvalidInputException;    
+    String deleteWord(String wordId) throws InvalidInputException;    
 }

@@ -1,21 +1,20 @@
 package com.ruchika.hangman.responses;
 
-import com.ruchika.hangman.model.RequestStatus;
 
 public class DeleteWordResponse {
 
-    private RequestStatus requestStatus;
+    private String deletedWordId;
 
-    public DeleteWordResponse(RequestStatus requestStatus) {
-        this.requestStatus = requestStatus;
+    public DeleteWordResponse(String deletedWordId) {
+        this.deletedWordId = deletedWordId;
     }
 
-    public RequestStatus getRequestStatus() {
-        return requestStatus;
+    public String getDeletedWordId() {
+        return deletedWordId;
     }
 
-    public void setRequestStatus(RequestStatus requestStatus) {
-        this.requestStatus = requestStatus;
+    public void setDeletedWordId(String deletedWordId) {
+        this.deletedWordId = deletedWordId;
     }
     
     

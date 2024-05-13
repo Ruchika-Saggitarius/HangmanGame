@@ -17,7 +17,7 @@ import com.ruchika.hangman.model.User;
 
 import lombok.extern.log4j.Log4j2;
 
-import com.ruchika.hangman.model.RequestStatus;
+import com.ruchika.hangman.model.DatabaseRequestStatus;
 import com.ruchika.hangman.model.Role;
 
 @Repository
@@ -36,7 +36,7 @@ public class MySQLUserRepository implements IUserRepository{
     }
 
     @Override
-    public RequestStatus saveUser(User newUser) {
+    public DatabaseRequestStatus saveUser(User newUser) {
             try {
                 statement = connection.prepareStatement("INSERT INTO user (userId, displayName, email, password, role, totalScore) VALUES (?, ?, ?, ?, ?, ?)");
                 statement.setString(1, newUser.getUserId());
@@ -47,7 +47,7 @@ public class MySQLUserRepository implements IUserRepository{
                 statement.setInt(6, newUser.getTotalScore());
                 statement.executeUpdate();
                 log.info("User saved successfully");
-                return RequestStatus.SUCCESS;
+                return DatabaseRequestStatus.SUCCESS;
             } catch (SQLException e) {
                 e.printStackTrace();
                 log.error("Error in saving user");
@@ -115,7 +115,7 @@ public class MySQLUserRepository implements IUserRepository{
     }
 
     @Override
-    public RequestStatus updateEmailOfUser(String userId, String newEmail) {
+    public DatabaseRequestStatus updateEmailOfUser(String userId, String newEmail) {
             try {
                 statement = connection.prepareStatement("SELECT * FROM user WHERE userId = ?");
                 statement.setString(1, userId);
@@ -127,7 +127,7 @@ public class MySQLUserRepository implements IUserRepository{
                     statement.executeUpdate();
                 }
                 log.info("Email updated successfully");
-                return RequestStatus.SUCCESS;
+                return DatabaseRequestStatus.SUCCESS;
             } catch (SQLException e) {
                 log.error("Error in updating email");
                 e.printStackTrace();
@@ -136,7 +136,7 @@ public class MySQLUserRepository implements IUserRepository{
     }
 
     @Override
-    public RequestStatus ResetPasswordOfUser(String userId, String newHashedPassword) {
+    public DatabaseRequestStatus ResetPasswordOfUser(String userId, String newHashedPassword) {
             try {
                 statement = connection.prepareStatement("SELECT * FROM user WHERE userId = ?");
                 statement.setString(1, userId);
@@ -148,7 +148,7 @@ public class MySQLUserRepository implements IUserRepository{
                     statement.executeUpdate();
                 }
                 log.info("Password reset successfully");
-                return RequestStatus.SUCCESS;
+                return DatabaseRequestStatus.SUCCESS;
             } catch (SQLException e) {
                 log.error("Error in resetting password");
                 e.printStackTrace();

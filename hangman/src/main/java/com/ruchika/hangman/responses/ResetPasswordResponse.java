@@ -1,22 +1,21 @@
 package com.ruchika.hangman.responses;
 
-import com.ruchika.hangman.model.RequestStatus;
+import com.ruchika.hangman.model.User;
 
 public class ResetPasswordResponse {
 
-    private RequestStatus requestStatus;
+    private User user;
 
-
-    public ResetPasswordResponse(RequestStatus requestStatus) {
-        this.requestStatus = requestStatus;
+    public ResetPasswordResponse(User user) {
+        this.user = user;
     }
 
-    public RequestStatus getRequestStatus() {
-        return requestStatus;
+    public User getUser() {
+        return user;
     }
 
-    public void setRequestStatus(RequestStatus requestStatus) {
-        this.requestStatus = requestStatus;
+    public void setUser(User user) {
+        this.user = user;
     }
 
 }

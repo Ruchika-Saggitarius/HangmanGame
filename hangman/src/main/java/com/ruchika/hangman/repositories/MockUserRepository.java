@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 
-import com.ruchika.hangman.model.RequestStatus;
+import com.ruchika.hangman.model.DatabaseRequestStatus;
 import com.ruchika.hangman.model.User;
 
 @Repository
@@ -15,9 +15,9 @@ public class MockUserRepository implements IUserRepository{
     List<User> users = new ArrayList<User>();
 
     @Override
-    public RequestStatus saveUser(User newUser) {
+    public DatabaseRequestStatus saveUser(User newUser) {
         users.add(newUser);
-        return RequestStatus.SUCCESS;
+        return DatabaseRequestStatus.SUCCESS;
     }
 
     @Override
@@ -54,23 +54,23 @@ public class MockUserRepository implements IUserRepository{
     }
 
     @Override
-    public RequestStatus updateEmailOfUser(String userId, String newEmail) {
+    public DatabaseRequestStatus updateEmailOfUser(String userId, String newEmail) {
         for(User user: users) {
             if(user.getUserId().equals(userId)) {
                 user.setEmail(newEmail);
             }
         }
-        return RequestStatus.SUCCESS;
+        return DatabaseRequestStatus.SUCCESS;
     }
 
     @Override
-    public RequestStatus ResetPasswordOfUser(String userId, String newHashedPassword) {
+    public DatabaseRequestStatus ResetPasswordOfUser(String userId, String newHashedPassword) {
         for(User user: users) {
             if(user.getUserId().equals(userId)) {
                     user.setPassword(newHashedPassword);
                 }
             }
-        return RequestStatus.SUCCESS;
+        return DatabaseRequestStatus.SUCCESS;
     }
         
     

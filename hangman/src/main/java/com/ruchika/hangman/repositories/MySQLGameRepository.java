@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import com.ruchika.hangman.model.Game;
 import com.ruchika.hangman.model.GameStatus;
-import com.ruchika.hangman.model.RequestStatus;
+import com.ruchika.hangman.model.DatabaseRequestStatus;
 import com.ruchika.hangman.model.Word;
 
 import lombok.extern.log4j.Log4j2;
@@ -56,7 +56,7 @@ public class MySQLGameRepository implements IGameRepository{
     }
 
     @Override
-    public RequestStatus saveGame(String gameId, Game game) {
+    public DatabaseRequestStatus saveGame(String gameId, Game game) {
         try{
             statement = connection.prepareStatement("UPDATE game SET remainingLives = ?, gameStatus = ?, score = ? WHERE gameId = ?");
             statement.setInt(1, game.getRemainingLives());
@@ -65,7 +65,7 @@ public class MySQLGameRepository implements IGameRepository{
             statement.setString(4, gameId);
             statement.executeUpdate();
             log.info("Game saved");
-            return RequestStatus.SUCCESS;
+            return DatabaseRequestStatus.SUCCESS;
         } catch (SQLException e) {
             e.printStackTrace();
             log.error("Error in saving game");
@@ -165,14 +165,15 @@ public class MySQLGameRepository implements IGameRepository{
     }
 
     @Override
-    public RequestStatus quitGame(String gameId) {
+    public DatabaseRequestStatus quitGame(String userId, String gameId) {
         try{
-            statement = connection.prepareStatement("UPDATE game SET gameStatus = ? WHERE gameId = ?");
+            statement = connection.prepareStatement("UPDATE game SET gameStatus = ? WHERE gameId = ? AND userId = ?");
             statement.setString(1, GameStatus.QUIT.toString());
             statement.setString(2, gameId);
+            statement.setString(3, userId);
             statement.executeUpdate();
             log.info("Game quit");
-            return RequestStatus.SUCCESS;
+            return DatabaseRequestStatus.SUCCESS;
         } catch (SQLException e) {
             e.printStackTrace();
             log.error("Error in quitting game");

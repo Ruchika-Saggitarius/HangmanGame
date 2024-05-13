@@ -23,7 +23,7 @@ public class WordService implements IWordService {
     }
 
     @Override
-    public void addWord(AddWordRequest addWordRequest) throws InvalidInputException{
+    public Word addWord(AddWordRequest addWordRequest) throws InvalidInputException{
           if(addWordRequest.getWord().isEmpty() || addWordRequest.getHint().isEmpty()){
             throw new InvalidInputException("Invalid input. Please provide all the required fields.");
         }
@@ -40,12 +40,13 @@ public class WordService implements IWordService {
             throw new InvalidInputException("Word already exists. Please provide a different word.");
         }
         String wordId = UUID.randomUUID().toString();
-        wordRepository.addWord(new Word(wordId, addWordRequest.getWord().toLowerCase(), addWordRequest.getHint()));
-        
+        Word word = new Word(wordId, addWordRequest.getWord().toLowerCase(), addWordRequest.getHint());
+        wordRepository.addWord(word);
+        return word;  
     }
 
     @Override
-    public void deleteWord(String wordId) throws InvalidInputException{
+    public String deleteWord(String wordId) throws InvalidInputException{
         if(wordId.isEmpty()){
             throw new InvalidInputException("Invalid input. Please provide a valid word id.");
         }
@@ -53,6 +54,7 @@ public class WordService implements IWordService {
             throw new InvalidInputException("Invalid word id. Please provide a valid word id.");
         }
         wordRepository.deleteWord(wordId);
+        return wordId;
         
     }
     

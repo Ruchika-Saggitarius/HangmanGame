@@ -1,22 +1,21 @@
 package com.ruchika.hangman.responses;
 
-import com.ruchika.hangman.model.RequestStatus;
+import com.ruchika.hangman.model.Game;
 
 public class QuitGameResponse {
 
-    private RequestStatus requestStatus;
+    private Game game;
 
-
-    public QuitGameResponse(RequestStatus requestStatus) {
-        this.requestStatus = requestStatus;
+    public QuitGameResponse(Game game) {
+        this.game = game;
     }
 
-    public RequestStatus getRequestStatus() {
-        return requestStatus;
+    public Game getGame() {
+        return game;
     }
 
-    public void setRequestStatus(RequestStatus requestStatus) {
-        this.requestStatus = requestStatus;
+    public void setGame(Game game) {
+        this.game = game;
     }
-    
+     
 }

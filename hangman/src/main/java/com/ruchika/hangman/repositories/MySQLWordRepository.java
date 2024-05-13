@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import com.ruchika.hangman.exceptions.NoWordsAvailableException;
-import com.ruchika.hangman.model.RequestStatus;
+import com.ruchika.hangman.model.DatabaseRequestStatus;
 import com.ruchika.hangman.model.Word;
 
 @Repository
@@ -74,7 +74,7 @@ public class MySQLWordRepository implements IWordRepository{
     }
 
     @Override
-    public RequestStatus addWord(Word newWord) {
+    public DatabaseRequestStatus addWord(Word newWord) {
         try {
             statement = connection.prepareStatement("INSERT INTO word (wordId, word, hint) VALUES (?, ?, ?)");
             statement.setString(1, newWord.getWordId());
@@ -82,7 +82,7 @@ public class MySQLWordRepository implements IWordRepository{
             statement.setString(3, newWord.getHint());
             statement.executeUpdate();
             logger.info("Word added successfully");
-            return RequestStatus.SUCCESS;
+            return DatabaseRequestStatus.SUCCESS;
         } catch (SQLException e) {
             e.printStackTrace();
             logger.error("Error in adding word");
@@ -92,13 +92,13 @@ public class MySQLWordRepository implements IWordRepository{
     }
 
     @Override
-    public RequestStatus deleteWord(String wordId) {
+    public DatabaseRequestStatus deleteWord(String wordId) {
         try {
             statement = connection.prepareStatement("DELETE FROM word WHERE wordId = ?");
             statement.setString(1, wordId);
             statement.executeUpdate();
             logger.info("Word deleted successfully");
-            return RequestStatus.SUCCESS;
+            return DatabaseRequestStatus.SUCCESS;
         } catch (SQLException e) {
             e.printStackTrace();
             logger.error("Error in deleting word");

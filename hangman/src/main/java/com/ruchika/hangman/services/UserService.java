@@ -7,8 +7,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import com.ruchika.hangman.exceptions.InvalidInputException;
-import com.ruchika.hangman.exceptions.UserDoesNotExistException;
-import com.ruchika.hangman.model.RequestStatus;
 import com.ruchika.hangman.model.User;
 import com.ruchika.hangman.repositories.IUserRepository;
 import com.ruchika.hangman.requests.LoginUserRequest;
@@ -26,7 +24,7 @@ public class UserService implements IUserService{
     private JwtService jwtService;
 
     @Override
-    public RequestStatus saveUser(RegisterUserRequest registerUserRequest) throws InvalidInputException {
+    public User saveUser(RegisterUserRequest registerUserRequest) throws InvalidInputException {
         if(registerUserRequest.getEmail().isEmpty() || registerUserRequest.getPassword().isEmpty() || registerUserRequest.getDisplayName().isEmpty() || registerUserRequest.getRole() == null){
             throw new InvalidInputException("Invalid input. Please provide all the required fields.");
             }
@@ -56,9 +54,10 @@ public class UserService implements IUserService{
                 int totalScore = 0;
                 String originalPassword = registerUserRequest.getPassword();
                 String generatedSecuredPasswordHash = BCrypt.hashpw(originalPassword, BCrypt.gensalt(12));
-                userRepository.saveUser(new User(userId, registerUserRequest.getDisplayName(), registerUserRequest.getEmail(),
-                    generatedSecuredPasswordHash, registerUserRequest.getRole(), totalScore));
-                return RequestStatus.SUCCESS;
+                User user = new User(userId, registerUserRequest.getDisplayName(), registerUserRequest.getEmail(),
+                generatedSecuredPasswordHash, registerUserRequest.getRole(), totalScore);
+                userRepository.saveUser(user);
+                return user;
             }
         
     }
@@ -83,22 +82,14 @@ public class UserService implements IUserService{
     }
 
     @Override
-    public User getUserProfile(String userId) throws UserDoesNotExistException{
-            boolean userIdExists = userRepository.checkIfUserIdExists(userId);
-            if (!userIdExists) {
-                throw new UserDoesNotExistException("User does not exist");
-        }
+    public User getUserProfile(String userId) {
             User user = userRepository.getUserByUserId(userId);
             return user;
     }
 
     @Override
-    public RequestStatus updateEmailOfUser(String userId, UpdateEmailRequest updateEmailRequest) throws InvalidInputException, UserDoesNotExistException{
-        boolean userIdExists = userRepository.checkIfUserIdExists(userId);
-        if (!userIdExists) {
-            throw new UserDoesNotExistException("User does not exist");
-        }
-        else if(updateEmailRequest.getNewEmail().isEmpty()){
+    public User updateEmailOfUser(String userId, UpdateEmailRequest updateEmailRequest) throws InvalidInputException{
+        if(updateEmailRequest.getNewEmail().isEmpty()){
             throw new InvalidInputException("Invalid input. Please provide all the required fields.");
         }
         else if(updateEmailRequest.getNewEmail().matches(".+@.+\\..+")==false){
@@ -109,18 +100,15 @@ public class UserService implements IUserService{
         }
         else{
         userRepository.updateEmailOfUser(userId, updateEmailRequest.getNewEmail());
-        return RequestStatus.SUCCESS;
+        User user = userRepository.getUserByUserId(userId);
+        return user;
         }
         
     }
 
     @Override
-    public RequestStatus ResetPasswordOfUser(String userId, ResetPasswordRequest resetPasswordRequest) throws InvalidInputException, UserDoesNotExistException{
-        boolean userIdExists = userRepository.checkIfUserIdExists(userId);
-        if (!userIdExists) {
-            throw new UserDoesNotExistException("User does not exist");
-        }
-        else if(resetPasswordRequest.getOldPassword().isEmpty() || resetPasswordRequest.getNewPassword().isEmpty()){
+    public User ResetPasswordOfUser(String userId, ResetPasswordRequest resetPasswordRequest) throws InvalidInputException{
+        if(resetPasswordRequest.getOldPassword().isEmpty() || resetPasswordRequest.getNewPassword().isEmpty()){
             throw new InvalidInputException("Invalid input. Please provide all the required fields.");
         }
         else if(resetPasswordRequest.getNewPassword().length()<8){
@@ -137,7 +125,8 @@ public class UserService implements IUserService{
         else{
         String generatedSecuredPasswordHash = BCrypt.hashpw(resetPasswordRequest.getNewPassword(), BCrypt.gensalt(12));
         userRepository.ResetPasswordOfUser(userId, generatedSecuredPasswordHash);
-        return RequestStatus.SUCCESS;
+        User user = userRepository.getUserByUserId(userId);
+        return user;
         }
         }
         

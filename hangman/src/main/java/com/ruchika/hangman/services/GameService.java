@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.ruchika.hangman.exceptions.InvalidInputException;
 import com.ruchika.hangman.exceptions.NoWordsAvailableException;
-import com.ruchika.hangman.exceptions.UserDoesNotExistException;
 import com.ruchika.hangman.model.Game;
 import com.ruchika.hangman.model.GameStatistics;
 import com.ruchika.hangman.model.GameStatus;
@@ -34,11 +33,7 @@ public class GameService implements IGameService {
     private IGameRepository gameRepository;
 
     @Override
-    public Game getNewGame(String userId) throws NoWordsAvailableException, UserDoesNotExistException{
-        boolean userIdExists = userRepository.checkIfUserIdExists(userId);
-        if (!userIdExists) {
-            throw new UserDoesNotExistException("User does not exist");
-        }
+    public Game getNewGame(String userId) throws NoWordsAvailableException{
         Word word;
         word = wordRepository.getRandomWord();
         String gameId = UUID.randomUUID().toString();
@@ -49,11 +44,7 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public Game getGameByGameId(String userId, String gameId) throws InvalidInputException, UserDoesNotExistException{
-        boolean userIdExists = userRepository.checkIfUserIdExists(userId);
-        if (!userIdExists) {
-            throw new UserDoesNotExistException("User does not exist");
-        }
+    public Game getGameByGameId(String userId, String gameId) throws InvalidInputException{
         if (gameId.isEmpty()) {
             throw new InvalidInputException("Invalid input. Please provide a valid game id.");
         }
@@ -65,21 +56,14 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public List<Game> getAllGamesOfUser(String userId) throws UserDoesNotExistException{
-        boolean userIdExists = userRepository.checkIfUserIdExists(userId);
-        if (!userIdExists) {
-            throw new UserDoesNotExistException("User does not exist");
-        }
+    public List<Game> getAllGamesOfUser(String userId) {
         List<Game> games = gameRepository.getAllGamesOfUser(userId);
         return games;
     }
 
     @Override
-    public GuessResponse saveGuessByUser(String userId, String gameId, GuessRequest guessRequest) throws InvalidInputException, UserDoesNotExistException{
-        boolean userIdExists = userRepository.checkIfUserIdExists(userId);
-        if (!userIdExists) {
-            throw new UserDoesNotExistException("User does not exist");
-        }
+    public GuessResponse saveGuessByUser(String userId, String gameId, GuessRequest guessRequest) throws InvalidInputException{
+        
         if (gameId.isEmpty() || guessRequest.getGuess().isEmpty()) {
             throw new InvalidInputException("Invalid input. Please provide a valid game id and guess.");
         }
@@ -123,7 +107,7 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public String quitGame(String gameId) throws InvalidInputException{
+    public Game quitGame(String userId, String gameId) throws InvalidInputException{
         if (gameId.isEmpty()) {
             throw new InvalidInputException("Invalid input. Please provide a valid game id and guess.");
         }
@@ -134,8 +118,8 @@ public class GameService implements IGameService {
         if (game.getGameStatus() != GameStatus.IN_PROGRESS) {
             throw new InvalidInputException("Game is already over!!");
         }
-        gameRepository.quitGame(gameId);
-        return "Game quit successfully";
+        gameRepository.quitGame(userId, gameId);
+        return game;
     }
 
     @Override

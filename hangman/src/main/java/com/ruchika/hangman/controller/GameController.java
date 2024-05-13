@@ -24,10 +24,8 @@ import com.ruchika.hangman.services.IGameService;
 import com.ruchika.hangman.exceptions.BadRequestException;
 import com.ruchika.hangman.exceptions.InvalidInputException;
 import com.ruchika.hangman.exceptions.NoWordsAvailableException;
-import com.ruchika.hangman.exceptions.UserDoesNotExistException;
 import com.ruchika.hangman.model.Game;
 import com.ruchika.hangman.model.GameStatistics;
-import com.ruchika.hangman.model.RequestStatus;
 import com.ruchika.hangman.model.User;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,9 +45,7 @@ public class GameController {
             Game newGame = gameService.getNewGame(userId);
             return ResponseEntity.ok(new NewGameResponse(newGame));
         }
-        // You shouldn't be catching UserDoesNotExistException here. It should be
-        // handled by the security layer.
-        catch (NoWordsAvailableException | UserDoesNotExistException e) {
+        catch (NoWordsAvailableException  e) {
             throw new BadRequestException(e.getMessage());
         }
     }
@@ -63,7 +59,7 @@ public class GameController {
             return ResponseEntity.ok(new GameByGameIdResponse(
                     game.getWord().getObscuredWord(game.getGuessedAlphabets()),
                     game.getWord().getHint(), game.getRemainingLives(), game.getGuessedAlphabets(), game.getScore()));
-        } catch (InvalidInputException | UserDoesNotExistException e) {
+        } catch (InvalidInputException  e) {
             throw new BadRequestException(e.getMessage());
         }
 
@@ -73,12 +69,8 @@ public class GameController {
     public ResponseEntity<GetAllGamesOfUserResponse> getAllGamesOfUser(HttpServletRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userId = ((User) auth.getPrincipal()).getUserId();
-        try {
             List<Game> userGames = gameService.getAllGamesOfUser(userId);
             return ResponseEntity.ok(new GetAllGamesOfUserResponse(userGames));
-        } catch (UserDoesNotExistException e) {
-            throw new BadRequestException(e.getMessage());
-        }
     }
 
     @PostMapping("/game/{gameId}/guess")
@@ -94,7 +86,7 @@ public class GameController {
                     .ok(new SaveGuessByUserResponse(game.getWord().getObscuredWord(game.getGuessedAlphabets()),
                             game.getRemainingLives(), game.getGuessedAlphabets(), isCorrectGuess, game.getGameStatus(),
                             game.getScore()));
-        } catch (InvalidInputException | UserDoesNotExistException e) {
+        } catch (InvalidInputException e) {
             throw new BadRequestException(e.getMessage());
         }
 
@@ -105,8 +97,8 @@ public class GameController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userId = ((User) auth.getPrincipal()).getUserId();
         try {
-            gameService.quitGame(gameId);
-            return ResponseEntity.ok(new QuitGameResponse(RequestStatus.SUCCESS));
+            Game game = gameService.quitGame(userId,gameId);
+            return ResponseEntity.ok(new QuitGameResponse(game));
         } catch (InvalidInputException e) {
             throw new BadRequestException(e.getMessage());
         }
@@ -114,13 +106,7 @@ public class GameController {
 
     @GetMapping("/game-statistics")
     public ResponseEntity<GetGameStatisticsResponse> getGameStatistics() {
-
-        try {
             List<GameStatistics> gameStatistics = gameService.getGameStatistics();
             return ResponseEntity.ok(new GetGameStatisticsResponse(gameStatistics));
-        } catch (InvalidInputException e) {
-            throw new BadRequestException(e.getMessage());
-        }
-
     }
 }

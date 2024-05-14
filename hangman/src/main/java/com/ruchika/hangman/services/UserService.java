@@ -120,7 +120,7 @@ public class UserService implements IUserService{
         else {
         boolean passwordMatch = userRepository.checkIfPasswordMatches(userId, resetPasswordRequest.getOldPassword());
         if(passwordMatch == false){
-            throw new InvalidInputException("Invalid password. Please provide a valid password.");
+            throw new InvalidInputException("Invalid old password. Please provide valid old password.");
         }
         else{
         String generatedSecuredPasswordHash = BCrypt.hashpw(resetPasswordRequest.getNewPassword(), BCrypt.gensalt(12));
